@@ -1,0 +1,134 @@
+import { useState, useEffect } from 'react'
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import { FormControl, InputLabel, Input, FormHelperText, FormGroup } from '@mui/material';
+import FilledInput from '@mui/material/FilledInput';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import EmailIcon from '@mui/icons-material/Email';
+import { useNavigate } from "react-router";
+import axios from 'axios';
+
+function SignUp() {
+
+
+    const navigate = useNavigate();
+    const [values, setValues] = useState({
+        firstName: '',
+        lastName: '',
+        username: '',
+        password: ''
+    });
+
+    const handleSignUp = () => {
+        axios
+            .post(`https://favourite-movie-server.herokuapp.com/api/register`, { username: values.username, password: values.password, firstName: values.firstName, lastName: values.lastName })
+            .then((result) => {
+                if (result.data.message == 'success') {
+
+                    console.log('registration successful')
+                    navigate("/my-favourite-movies/Login");
+
+
+                } else {
+                    console.log('this username has already been registered')
+                }
+            });
+    }
+    const handleChange = (prop) => (event) => {
+        setValues({ ...values, [prop]: event.target.value });
+    };
+
+    const handleClickShowPassword = () => {
+        setValues({
+            ...values,
+            showPassword: !values.showPassword,
+        });
+    };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
+    return (
+        <div className="App">
+            <Box sx={{ flexGrow: 1 }}>
+                <AppBar position="static">
+                    <Toolbar>
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                            <p>My Favourite Movies</p>
+                        </Typography>
+
+                    </Toolbar>
+                </AppBar>
+                <FormGroup className='formGroup'>
+                    <h2>Sign up</h2>
+                    <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-firstName">First Name</InputLabel>
+                        <OutlinedInput
+                            id="outlined-adornment-firstName"
+                            value={values.firstName}
+                            onChange={handleChange('firstName')}
+                            label="firstName"
+                        />
+                    </FormControl>
+                    <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-lastName">Last Name</InputLabel>
+                        <OutlinedInput
+                            id="outlined-adornment-lastName"
+                            value={values.lastName}
+                            onChange={handleChange('lastName')}
+                            label="lastName"
+                        />
+                    </FormControl>
+                    <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-username">Username</InputLabel>
+                        <OutlinedInput
+                            id="outlined-adornment-username"
+                            value={values.username}
+                            onChange={handleChange('username')}
+                           
+                            label="username"
+                        />
+                    </FormControl>
+                    <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                        <OutlinedInput
+                            id="outlined-adornment-password"
+                            type={values.showPassword ? 'text' : 'password'}
+                            value={values.password}
+                            onChange={handleChange('password')}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                    >
+                                        {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            label="Password"
+                        />
+                    </FormControl>
+                    <Button variant="contained" sx={{ m: 1 }} onClick={handleSignUp}>Sign Up</Button>
+                    <Button variant="contained" sx={{ m: 1 }} onClick={ () => {navigate("/my-favourite-movies/Login")}}>Login</Button>
+
+                </FormGroup>
+
+            </Box>
+        </div>
+    )
+}
+
+export default SignUp
