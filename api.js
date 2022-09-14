@@ -18,7 +18,7 @@ module.exports = function (app, db) {
         try {
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
             const { username } = decoded;
-
+        //check if username matches logged in user
             if (username) {
                 next();
             } else {
