@@ -29,6 +29,7 @@ function Login() {
         axios
             .post(`https://favourite-movie-server.herokuapp.com/api/login`, { username: values.username, password: values.password })
             .then((result) => {
+                const { token } = result.data;
                 if (!result) return (
                     <CircularProgress />
                 );
@@ -41,6 +42,8 @@ function Login() {
                 } else {
                     console.log('login successful')
                     localStorage.setItem('username', values.username)
+                    localStorage.setItem('token', token);
+
                     navigate("/my-favourite-movies/Home");
                 }
             })

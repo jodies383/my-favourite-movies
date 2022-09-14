@@ -37,6 +37,7 @@ export default function Home() {
   const [user, setUser] = useState('')
 
   useEffect(() => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     const username = localStorage.getItem('username')
     axios.get(`${URL_BASE}/api/playlist/${username}`).then(async (response) => {
       const { data } = response
@@ -58,6 +59,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     axios.get(baseURL).then((response) => {
       const { results } = response.data
       //console.log(results)
@@ -68,6 +70,7 @@ export default function Home() {
 
 
   const searchMovies = async () => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     if (searchInput) {
       await axios
         .get(`https://api.themoviedb.org/3/search/movie?api_key=511ebf4540231b1f06e7bec72f6b4a05&query=${searchInput}`)
@@ -92,6 +95,7 @@ export default function Home() {
     }
   }
   const removeMovie = (movie) => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     const username = localStorage.getItem('username')
     axios
       .delete(`${URL_BASE}/api/playlist?username=${username}&movie_id=${movie}`)
@@ -125,6 +129,7 @@ export default function Home() {
     return
   }
   const addToFavourites = async (id) => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     const username = localStorage.getItem('username')
     axios
       .post(`${URL_BASE}/api/playlist/${username}`, { movieId: id })
