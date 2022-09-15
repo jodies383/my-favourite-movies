@@ -39,7 +39,7 @@ export default function Home() {
   useEffect(() => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     const username = localStorage.getItem('username')
-    axios.get(`${URL_BASE}/api/playlist/${username}`).then(async (response) => {
+    axios.get(`${URL_BASE}/api/all_playlist_titles/${username}`).then(async (response) => {
       const { data } = response
       //console.log(results)
       let playlistData = data.playlist
@@ -59,7 +59,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     axios.get(baseURL).then((response) => {
       const { results } = response.data
       //console.log(results)

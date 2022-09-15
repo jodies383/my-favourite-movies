@@ -133,7 +133,7 @@ module.exports = function (app, db) {
 
             const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
             const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
-            const playlist = await db.manyOrNone(`SELECT * from playlist_titles INNERJOIN playlists on playlist_titles.playlist_id=playlists.id where playist_name = $1 AND user_id = $2`, [playlist_name, id]);
+            const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where playlists.playlist_name = $1  AND user_id = $2`, [playlist_name, id]);
             res.json({
                 user: userInfo,
                 playlist
@@ -152,7 +152,7 @@ module.exports = function (app, db) {
 
             const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
             const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
-            const playlist = await db.manyOrNone(`SELECT * from playlist_titles INNERJOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1`, [id]);
+            const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1`, [id]);
             res.json({
                 user: userInfo,
                 playlist
