@@ -13,7 +13,7 @@ import InputBase from '@mui/material/InputBase';
 import { useNavigate } from "react-router";
 import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
-
+import Modal from '@mui/material/Modal';
 import Drawer from '@mui/material/Drawer';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -22,6 +22,11 @@ import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import CircularProgress from '@mui/material/CircularProgress';
 import Header from './Header';
 import BookmarkRemove from '@mui/icons-material/BookmarkRemove';
+import FormControl from '@mui/material/FormControl';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import AddIcon from '@mui/icons-material/Add';
+import Checkbox from '@mui/material/Checkbox';
 
 const baseURL = "https://api.themoviedb.org/3/movie/popular?api_key=511ebf4540231b1f06e7bec72f6b4a05&language=en-US&page=1";
 const URL_BASE = 'https://favourite-movie-server.herokuapp.com'
@@ -33,8 +38,15 @@ export default function Home() {
   const [searchInput, setSearchInput] = useState('');
   const [movieResults, setMovieResults] = useState('');
   const [playlist, setPlaylist] = useState('');
+  const [playlist_name, setPlaylist_Name] = useState('')
+  const [allPlaylists, setAllPlaylists] = useState('')
+  const [movieId, setMovieId] = useState('')
 
   const [user, setUser] = useState('')
+
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
@@ -66,7 +78,17 @@ export default function Home() {
       setMovieResults(`Trending movies`)
     });
   }, []);
+  const createNewPlaylist = () => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
 
+    const username = localStorage.getItem('username')
+    axios.post(`${URL_BASE}/api/new_playlist/${username}`, { playlist_name }).then((response) => {
+      axios.get(`${URL_BASE}/api/playlists/${username}`).then((response) => {
+        const { data } = response
+        setAllPlaylists(data.playlist)
+      })
+    })
+  }
 
   const searchMovies = async () => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
@@ -109,7 +131,7 @@ export default function Home() {
                 return axios
                   .get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`)
                   .then((result) => {
-                    
+
                     return result.data
                   }).catch(e => console.log(e))
 
@@ -127,13 +149,13 @@ export default function Home() {
     }
     return
   }
-  const addToFavourites = async (id) => {
+  const addToFavourites = async (id, playlist_name) => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     const username = localStorage.getItem('username')
     axios
-      .post(`${URL_BASE}/api/playlist/${username}`, { movieId: id })
+      .post(`${URL_BASE}/api/playlist_titles/${username}/${playlist_name}`, { movieId: id })
       .then((result) => {
-      
+
         if (result.data.message == 'success') {
           axios
             .get(`${URL_BASE}/api/playlist/${username}`)
@@ -144,16 +166,26 @@ export default function Home() {
                 return axios
                   .get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`)
                   .then((result) => {
-                    
+
                     return result.data
                   }).catch(e => console.log(e))
 
               });
               setPlaylist(await Promise.all(movies))
+              console.log(playlist)
             });
         }
       });
   }
+  useEffect(() => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+    const username = localStorage.getItem('username')
+    axios.get(`${URL_BASE}/api/playlists/${username}`).then((response) => {
+      const { data } = response
+      setAllPlaylists(data.playlist)
+    })
+  }, []);
+
   if (!post) return null;
 
   return (
@@ -174,6 +206,55 @@ export default function Home() {
         />
       </Box>
 
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 4,
+          textAlign: 'center',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <FormControl variant="standard">
+            <InputLabel htmlFor="input-with-icon-adornment">
+              Create new playlist
+            </InputLabel>
+            <Input
+              id="input-with-icon-adornment"
+              value={playlist_name}
+              onChange={({ target }) => setPlaylist_Name(target.value)}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton onClick={() => createNewPlaylist()}>
+                    <AddIcon />
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            {playlist ? allPlaylists.map((res) =>
+              <ListItem >
+                <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />
+                <ListItemIcon><BookmarksIcon /></ListItemIcon>
+                <ListItemText primary={`${res.playlist_name}`} onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }} />
+              </ListItem>
+            )
+              : null}
+          </Typography>
+          <Button onClick={handleClose}>Save</Button>
+        </Box>
+      </Modal>
       <h2 style={{ textAlign: 'center' }}>{movieResults}</h2>
       <Box className='movieCard' spacing={2}>
         {post.map((res, index) => <div container spacing={2} className='movieCardItems'>
@@ -181,9 +262,9 @@ export default function Home() {
 
             <img className='moviePoster' src={`https://image.tmdb.org/t/p/original/${res.poster_path}`} width='100%' />
             <br />
-            {!res.id ? <CircularProgress/> : bookmark(res.id) == true ? <IconButton key={index} onClick={() => removeMovie(res.id)}>
+            {!res.id ? <CircularProgress /> : bookmark(res.id) == true ? <IconButton key={index} onClick={() => removeMovie(res.id)}>
               <BookmarkRemoveIcon sx={{ color: 'black' }} />
-            </IconButton> : <IconButton key={index} onClick={() => addToFavourites(res.id)}>
+            </IconButton> : <IconButton key={index} onClick={() => {handleOpen(); setMovieId(res.id)}}>
               <BookmarkAddIcon />
             </IconButton>}
             <br />
@@ -198,7 +279,7 @@ export default function Home() {
         }
 
       </Box>
-    </div>
+    </div >
   )
 }
 

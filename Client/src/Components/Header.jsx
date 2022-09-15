@@ -20,6 +20,9 @@ import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Input from '@mui/material/Input';
 
 const baseURL = "https://api.themoviedb.org/3/movie/popular?api_key=511ebf4540231b1f06e7bec72f6b4a05&language=en-US&page=1";
 const URL_BASE = 'https://favourite-movie-server.herokuapp.com'
@@ -44,13 +47,30 @@ export default function Header() {
         axios.get(`${URL_BASE}/api/playlists/${username}`).then((response) => {
             const { data } = response
             setAllPlaylists(data.playlist)
+            console.log(allPlaylists)
         })
     }, []);
+
+    const createNewPlaylist = () => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+
+        const username = localStorage.getItem('username')
+        axios.post(`${URL_BASE}/api/new_playlist/${username}`, { playlist_name }).then((response) => {
+            axios.get(`${URL_BASE}/api/playlists/${username}`).then((response) => {
+                const { data } = response
+                setAllPlaylists(data.playlist)
+            })
+        })
+    }
+
+    const handleChange = () => (event) => {
+        setPlaylist_Name(event.target.value);
+    };
 
     useEffect(() => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
         const username = localStorage.getItem('username')
-        axios.get(`${URL_BASE}/api/all_playlist_titles/${username}/`).then((response) => {
+        axios.get(`${URL_BASE}/api/all_playlist_titles/${username}`).then((response) => {
             const { data } = response
             console.log(data)
             setPlaylist(data.playlist)
@@ -85,24 +105,38 @@ export default function Header() {
             </Box>
 
             <Drawer open={open} anchor={"left"} onClose={() => setOpen(false)} style={{ textAlign: 'center' }}>
-            <TextField id="standard-basic" label="Create new playlist" variant="standard"/>
-            <IconButton>
-                <AddIcon />
-            </IconButton>
+
                 {user ? user.map((res) =>
 
                     <h2>Hi {res.first_name} {res.last_name}</h2>
                 ) : null}
                 <hr />
+                <FormControl variant="standard">
+                    <InputLabel htmlFor="input-with-icon-adornment">
+                        Create new playlist
+                    </InputLabel>
+                    <Input
+                        id="input-with-icon-adornment"
+                        value={playlist_name}
+                        onChange={({ target }) => setPlaylist_Name( target.value )}
+                        endAdornment={
+                            <InputAdornment position="end">
+                                <IconButton onClick={ () => createNewPlaylist()}>
+                                    <AddIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        }
+                    />
+                </FormControl>
                 <div style={{ width: 250 }} onClick={() => setOpen(false)}>
 
                     {playlist ? allPlaylists.map((res) =>
-                    <ListItem onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{cursor: 'pointer'}}>
-                        <ListItemIcon><BookmarksIcon /></ListItemIcon>
-                        <ListItemText primary={`${res.playlist_name}`} />
-                    </ListItem>
+                        <ListItem onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }}>
+                            <ListItemIcon><BookmarksIcon /></ListItemIcon>
+                            <ListItemText primary={`${res.playlist_name}`} />
+                        </ListItem>
                     )
-                    : null}
+                        : null}
 
                 </div>
             </Drawer>

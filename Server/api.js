@@ -195,7 +195,7 @@ module.exports = function (app, db) {
         try {
             const { username } = req.params
             const { playlist_name } = req.params
-            const movieId = req.body
+            const { movieId } = req.body
 
 
             const { id } = await db.oneOrNone(`SELECT id from users WHERE username = $1`, [username]);
