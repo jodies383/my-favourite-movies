@@ -203,7 +203,7 @@ module.exports = function (app, db) {
             const playlistId = playlist.id
             let checkPlaylists = await db.manyOrNone(`SELECT * from playlist_titles WHERE playlist_id = $1 and movie_id = $2`, [playlistId, id]);
             if (checkPlaylists.length < 1) {
-                await db.none(`insert into playlist_titles (playlist_id, movie_id) values ($1, $2)`, [id, movieId])
+                await db.none(`insert into playlist_titles (playlist_id, movie_id) values ($1, $2)`, [playlistId, movieId])
 
                 res.json({
                     message: 'success'
