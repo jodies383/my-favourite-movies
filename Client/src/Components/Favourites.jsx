@@ -65,8 +65,8 @@ export default function Favourites() {
       <Header />
       <Button variant="contained" sx={{ m: 1 }} onClick={() => navigate('/my-favourite-movies/Home')}>Back to Movies</Button>
       <Box margin={5} alignContent='center' justifyContent={'center'}>
-
-        {playlist.length > 0 ? <h2 style={{ textAlign: 'center' }}>Your favourites</h2> : <h2 style={{ textAlign: 'center' }}>You have no favourites yet...</h2>}
+        
+        {!playlist ? <CircularProgress style={{ textAlign: 'center' }}/> : playlist.length > 0 ? <h2 style={{ textAlign: 'center' }}>Your favourites</h2> : <h2 style={{ textAlign: 'center' }}>You have no favourites yet...</h2>}
       </Box>
       <Box className='movieCard' spacing={2}>
         {playlist ? playlist.map((res, index) => <div container spacing={2} className='movieCardItems'  >

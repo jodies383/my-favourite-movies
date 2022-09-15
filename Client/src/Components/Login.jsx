@@ -16,7 +16,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import EmailIcon from '@mui/icons-material/Email';
 import { useNavigate } from "react-router";
 import axios from 'axios';
-import CircularProgress from '@mui/material/CircularProgress';
 
 
 function Login() {
@@ -109,7 +108,7 @@ function Login() {
                             label="Password"
                         />
                     </FormControl>
-                    <Button variant="contained" sx={{ m: 1 }} onClick={handleLogin}>Login</Button>
+                   { <Button disabled={!values.username || !values.password} variant="contained" sx={{ m: 1 }} onClick={handleLogin}>Login</Button>}
                     <Button variant="contained" sx={{ m: 1 }} onClick={ () => {navigate("/my-favourite-movies/")}}>Sign Up</Button>
 
                 </FormGroup>

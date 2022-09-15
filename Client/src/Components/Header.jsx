@@ -18,6 +18,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
+import AddIcon from '@mui/icons-material/Add';
 
 const baseURL = "https://api.themoviedb.org/3/movie/popular?api_key=511ebf4540231b1f06e7bec72f6b4a05&language=en-US&page=1";
 const URL_BASE = 'https://favourite-movie-server.herokuapp.com'
@@ -27,14 +29,26 @@ export default function Header() {
     const navigate = useNavigate();
     const [user, setUser] = useState('')
     const [playlist, setPlaylist] = useState('')
+    const [allPlaylists, setAllPlaylists] = useState('')
+    const [playlist_name, setPlaylist_Name] = useState('')
 
     const handleLogout = () => {
         localStorage.clear()
         navigate("/my-favourite-movies/");
     }
 
+    useEffect(() => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+
+        const username = localStorage.getItem('username')
+        axios.get(`${URL_BASE}/api/playlists/${username}`).then((response) => {
+            const { data } = response
+            setAllPlaylists(data.playlist)
+        })
+    }, []);
 
     useEffect(() => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
         const username = localStorage.getItem('username')
         axios.get(`${URL_BASE}/api/playlist/${username}`).then((response) => {
             const { data } = response
@@ -70,8 +84,11 @@ export default function Header() {
                 </AppBar>
             </Box>
 
-
             <Drawer open={open} anchor={"left"} onClose={() => setOpen(false)} style={{ textAlign: 'center' }}>
+            <TextField id="standard-basic" label="Create new playlist" variant="standard"/>
+            <IconButton>
+                <AddIcon />
+            </IconButton>
                 {user ? user.map((res) =>
 
                     <h2>Hi {res.first_name} {res.last_name}</h2>
@@ -79,10 +96,13 @@ export default function Header() {
                 <hr />
                 <div style={{ width: 250 }} onClick={() => setOpen(false)}>
 
+                    {playlist ? allPlaylists.map((res) =>
                     <ListItem onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{cursor: 'pointer'}}>
                         <ListItemIcon><BookmarksIcon /></ListItemIcon>
-                        <ListItemText primary={`Your favourites (${playlist.length})`} />
+                        <ListItemText primary={`${res.playlist_name}`} />
                     </ListItem>
+                    )
+                    : null}
 
                 </div>
             </Drawer>

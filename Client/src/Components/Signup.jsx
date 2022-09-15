@@ -121,7 +121,7 @@ function SignUp() {
                             label="Password"
                         />
                     </FormControl>
-                    <Button variant="contained" sx={{ m: 1 }} onClick={handleSignUp}>Sign Up</Button>
+                    <Button disabled={!values.username || !values.password || !values.firstName || !values.lastName} variant="contained" sx={{ m: 1 }} onClick={handleSignUp}>Sign Up</Button>
                     <Button variant="contained" sx={{ m: 1 }} onClick={ () => {navigate("/my-favourite-movies/Login")}}>Login</Button>
 
                 </FormGroup>

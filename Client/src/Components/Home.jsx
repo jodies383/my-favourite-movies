@@ -178,11 +178,11 @@ export default function Home() {
       <h2 style={{ textAlign: 'center' }}>{movieResults}</h2>
       <Box className='movieCard' spacing={2}>
         {post.map((res, index) => <div container spacing={2} className='movieCardItems'>
-          <div item xs={12} key={index}>
+          <div item xs={12}>
 
             <img className='moviePoster' src={`https://image.tmdb.org/t/p/original/${res.poster_path}`} width='100%' />
             <br />
-            {bookmark(res.id) == true ? <IconButton key={index} onClick={() => removeMovie(res.id)}>
+            {!res.id ? <CircularProgress/> : bookmark(res.id) == true ? <IconButton key={index} onClick={() => removeMovie(res.id)}>
               <BookmarkRemoveIcon sx={{ color: 'black' }} />
             </IconButton> : <IconButton key={index} onClick={() => addToFavourites(res.id)}>
               <BookmarkAddIcon />
