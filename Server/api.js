@@ -133,7 +133,26 @@ module.exports = function (app, db) {
 
             const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
             const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
-            const playlist = await db.manyOrNone(`SELECT * from playlist_titles INNERJOIN playlists on playlist_titles.playlist_id=playlists.id where playist_name = $1 WHERE user_id = $2`, [playlist_name, id]);
+            const playlist = await db.manyOrNone(`SELECT * from playlist_titles INNERJOIN playlists on playlist_titles.playlist_id=playlists.id where playist_name = $1 AND user_id = $2`, [playlist_name, id]);
+            res.json({
+                user: userInfo,
+                playlist
+            })
+
+
+        } catch (err) {
+            console.log(err);
+            next()
+        }
+    });
+
+    app.get('/api/all_playlist_titles/:username', verifyToken, async function (req, res, next) {
+        try {
+            const { username } = req.params
+
+            const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
+            const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
+            const playlist = await db.manyOrNone(`SELECT * from playlist_titles INNERJOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1`, [id]);
             res.json({
                 user: userInfo,
                 playlist

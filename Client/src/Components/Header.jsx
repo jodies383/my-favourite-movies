@@ -50,7 +50,7 @@ export default function Header() {
     useEffect(() => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
         const username = localStorage.getItem('username')
-        axios.get(`${URL_BASE}/api/playlist/${username}`).then((response) => {
+        axios.get(`${URL_BASE}/api/playlist//api/playlist_titles/${username}/:playlist_name`).then((response) => {
             const { data } = response
             console.log(data)
             setPlaylist(data.playlist)
