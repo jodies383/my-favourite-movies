@@ -261,7 +261,7 @@ module.exports = function (app, db) {
 
             try {
                 const { id } = await db.one(`select id from users where username = $1`, [username])
-                await db.none(`delete from playlist WHERE user_id = $1 and playlist_name = $2`, [id, playlist_name]);
+                await db.none(`delete from playlists WHERE user_id = $1 and playlist_name = $2`, [id, playlist_name]);
                 res.json({
                     status: 'success'
                 })
