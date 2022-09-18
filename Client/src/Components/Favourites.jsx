@@ -1,25 +1,33 @@
-import { useState, useEffect } from 'react'
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import InputAdornment from '@mui/material/InputAdornment';
-import axios from "axios"
-import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
+import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from "react-router";
-import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
-import Drawer from '@mui/material/Drawer';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import BookmarksIcon from '@mui/icons-material/Bookmarks';
-import CircularProgress from '@mui/material/CircularProgress';
 import Header from './Header';
+import UserContext from '../Contexts/UserContext';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  InputAdornment,
+  InputBase,
+  Drawer,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  CircularProgress,
+} from '@mui/material';
+
+import {
+  Menu,
+  Search,
+  BookmarkAdd,
+  Bookmarks,
+  BookmarkRemove,
+  Add,
+} from '@mui/icons-material';
+
+import axios from "axios"
 
 const baseURL = "https://api.themoviedb.org/3/movie/popular?api_key=511ebf4540231b1f06e7bec72f6b4a05&language=en-US&page=1";
 const URL_BASE = 'https://favourite-movie-server.herokuapp.com'
@@ -30,10 +38,12 @@ export default function Favourites() {
   const [post, setPost] = useState(null);
   const [playlist, setPlaylist] = useState('');
   const [user, setUser] = useState('')
+  const { focusPlaylist, setFocusPlaylist } = useContext(UserContext);
 
   useEffect(() => {
     const username = localStorage.getItem('username')
-    axios.get(`${URL_BASE}/api/playlist/${username}`).then(async (response) => {
+    console.log(focusPlaylist)
+    axios.get(`${URL_BASE}/api/playlist_titles/${username}/${focusPlaylist}`).then(async (response) => {
       const { data } = response
       //console.log(results)
       let res = data.playlist
@@ -50,7 +60,7 @@ export default function Favourites() {
       });
       setPlaylist(await Promise.all(movies))
     });
-  }, []);
+  }, [focusPlaylist]);
 
   const removeMovie = (movie) => {
     const username = localStorage.getItem('username')
@@ -65,17 +75,17 @@ export default function Favourites() {
       <Header />
       <Button variant="contained" sx={{ m: 1 }} onClick={() => navigate('/my-favourite-movies/Home')}>Back to Movies</Button>
       <Box margin={5} alignContent='center' justifyContent={'center'}>
-        
-        {!playlist ? <CircularProgress style={{ textAlign: 'center' }}/> : playlist.length > 0 ? <h2 style={{ textAlign: 'center' }}>Your favourites</h2> : <h2 style={{ textAlign: 'center' }}>You have no favourites yet...</h2>}
+
+        {!playlist ? <CircularProgress style={{ textAlign: 'center' }} /> : playlist.length > 0 ? <h2 style={{ textAlign: 'center' }}>Your favourites</h2> : <h2 style={{ textAlign: 'center' }}>You have no favourites yet...</h2>}
       </Box>
       <Box className='movieCard' spacing={2}>
-        {playlist ? playlist.map((res, index) => <div container spacing={2} className='movieCardItems'  >
+        {playlist ? playlist.map((res, index) => <div container spacing={2} className='movieCardItems'>
 
           <div item xs={12} key={index}>
             <img className='moviePoster' src={`https://image.tmdb.org/t/p/original/${res.poster_path}`} width='100px' />
             <br />
             <IconButton onClick={() => removeMovie(res.id)}>
-              <BookmarkRemoveIcon sx={{color: 'black'}}/>
+              <BookmarkRemove sx={{ color: 'black' }} />
             </IconButton>
             <br />
             <b>{res.title}</b>

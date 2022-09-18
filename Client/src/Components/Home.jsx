@@ -1,32 +1,40 @@
 import { useState, useEffect } from 'react'
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import InputAdornment from '@mui/material/InputAdornment';
-import axios from "axios"
-import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
 import { useNavigate } from "react-router";
-import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
-import Modal from '@mui/material/Modal';
-import Drawer from '@mui/material/Drawer';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import BookmarksIcon from '@mui/icons-material/Bookmarks';
-import CircularProgress from '@mui/material/CircularProgress';
 import Header from './Header';
-import BookmarkRemove from '@mui/icons-material/BookmarkRemove';
-import FormControl from '@mui/material/FormControl';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
-import AddIcon from '@mui/icons-material/Add';
-import Checkbox from '@mui/material/Checkbox';
+
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  InputAdornment,
+  InputBase,
+  Modal,
+  Drawer,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  CircularProgress,
+  FormControl,
+  Input,
+  InputLabel,
+  Checkbox,
+} from '@mui/material';
+
+import {
+  Menu,
+  Search,
+  BookmarkAdd,
+  Bookmarks,
+  BookmarkRemove,
+  Add,
+  Delete
+} from '@mui/icons-material';
+
+
+import axios from "axios"
 
 const baseURL = "https://api.themoviedb.org/3/movie/popular?api_key=511ebf4540231b1f06e7bec72f6b4a05&language=en-US&page=1";
 const URL_BASE = 'https://favourite-movie-server.herokuapp.com'
@@ -149,6 +157,24 @@ export default function Home() {
     }
     return
   }
+  const checkPlaylist = (playlistName) => {
+    let list = []
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+    const username = localStorage.getItem('username')
+    axios.get(`${URL_BASE}/api/playlist_titles/${username}/${playlistName}`).then(async (response) => {
+      const { data } = response
+
+      data.playlist.map((elem) => { list.push(elem.movie_id) })
+      
+    })
+    if (list.includes(movieId)) {
+      console.log('the condition is true')
+    
+      return true
+    }
+    return
+  }
+
   const addToFavourites = async (id, playlist_name) => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     const username = localStorage.getItem('username')
@@ -201,7 +227,7 @@ export default function Home() {
           placeholder="Search movies..." onChange={({ target }) => setSearchInput(target.value)} onKeyUp={searchMovies}
           endAdornment={
             <InputAdornment position="end">
-              <SearchIcon />
+              <Search />
             </InputAdornment>}
         />
       </Box>
@@ -236,36 +262,39 @@ export default function Home() {
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton onClick={() => createNewPlaylist()}>
-                    <AddIcon />
+                    <Add />
                   </IconButton>
                 </InputAdornment>
               }
             />
           </FormControl>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            {playlist ? allPlaylists.map((res) =>
-              <ListItem >
-                <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />
-                <ListItemIcon><BookmarksIcon /></ListItemIcon>
+            {Array.isArray(playlist) ? allPlaylists.map((res, index) =>
+              <ListItem key={index}>
+                {  console.log(checkPlaylist(res.playlist_name)) && checkPlaylist(res.playlist_name) === true ? 
+                <Checkbox defaultChecked /> : <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />
+                }
+                <ListItemIcon><Bookmarks /></ListItemIcon>
                 <ListItemText primary={`${res.playlist_name}`} onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }} />
               </ListItem>
             )
               : null}
           </Typography>
-          <Button onClick={handleClose}>Save</Button>
+          <Button onClick={handleClose}>Close</Button>
         </Box>
       </Modal>
+
       <h2 style={{ textAlign: 'center' }}>{movieResults}</h2>
       <Box className='movieCard' spacing={2}>
-        {post.map((res, index) => <div container spacing={2} className='movieCardItems'>
+        {post.map((res, index) => <div key={index} container spacing={2} className='movieCardItems'>
           <div item xs={12}>
 
             <img className='moviePoster' src={`https://image.tmdb.org/t/p/original/${res.poster_path}`} width='100%' />
             <br />
-            {!res.id ? <CircularProgress /> : bookmark(res.id) == true ? <IconButton key={index} onClick={() => removeMovie(res.id)}>
-              <BookmarkRemoveIcon sx={{ color: 'black' }} />
-            </IconButton> : <IconButton key={index} onClick={() => {handleOpen(); setMovieId(res.id)}}>
-              <BookmarkAddIcon />
+            {!res.id ? <CircularProgress /> : bookmark(res.id) == true ? <IconButton key={index} onClick={() => { handleOpen(); setMovieId(res.id) }}>
+              <BookmarkRemove sx={{ color: 'black' }} />
+            </IconButton> : <IconButton onClick={() => { handleOpen(); setMovieId(res.id) }}>
+              <BookmarkAdd />
             </IconButton>}
             <br />
             <b>{res.title}</b>

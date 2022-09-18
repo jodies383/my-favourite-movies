@@ -1,20 +1,27 @@
 import { useState, useEffect } from 'react'
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import { FormControl, InputLabel, Input, FormHelperText, FormGroup } from '@mui/material';
-import FilledInput from '@mui/material/FilledInput';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputAdornment from '@mui/material/InputAdornment';
-import TextField from '@mui/material/TextField';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import EmailIcon from '@mui/icons-material/Email';
 import { useNavigate } from "react-router";
+import {
+    AppBar,
+    Box,
+    FormControl,
+    InputLabel,
+    Input,
+    FormHelperText,
+    FormGroup,
+    Toolbar,
+    Typography,
+    Button,
+    IconButton,
+    FilledInput,
+    OutlinedInput,
+    InputAdornment,
+    TextField,
+} from '@mui/material';
+import {
+    Visibility,
+    VisibilityOff,
+} from '@mui/icons-material';
+
 import axios from 'axios';
 
 function SignUp() {
@@ -95,7 +102,7 @@ function SignUp() {
                             id="outlined-adornment-username"
                             value={values.username}
                             onChange={handleChange('username')}
-                           
+
                             label="username"
                         />
                     </FormControl>
@@ -122,7 +129,7 @@ function SignUp() {
                         />
                     </FormControl>
                     <Button disabled={!values.username || !values.password || !values.firstName || !values.lastName} variant="contained" sx={{ m: 1 }} onClick={handleSignUp}>Sign Up</Button>
-                    <Button variant="contained" sx={{ m: 1 }} onClick={ () => {navigate("/my-favourite-movies/Login")}}>Login</Button>
+                    <Button variant="contained" sx={{ m: 1 }} onClick={() => { navigate("/my-favourite-movies/Login") }}>Login</Button>
 
                 </FormGroup>
 

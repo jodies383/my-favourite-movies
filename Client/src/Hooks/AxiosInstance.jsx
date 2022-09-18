@@ -1,10 +1,9 @@
 import axios from 'axios';
 import { DATABASE_URL } from '@env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Auth from "../Hooks/FirebaseInstance";
+
 
 function AxiosInstance() {
-  const auth = Auth();
+  
   // const accessToken = await AsyncStorage.getItem('token')
   if (auth.currentUser == undefined) return null
   const axiosInstance = axios.create({
