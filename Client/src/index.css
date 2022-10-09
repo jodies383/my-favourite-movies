@@ -65,14 +65,12 @@ button:focus-visible {
   align-content: center;
   text-align: center;
 }
-.movieCard{
+.movieCard, .circularProgress{
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
   text-align: center;
-  
-  
 }
 .movieCardItems{
   padding: 0 !important;

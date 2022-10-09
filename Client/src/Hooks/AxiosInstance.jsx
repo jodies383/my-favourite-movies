@@ -1,16 +1,14 @@
 import axios from 'axios';
-import { DATABASE_URL } from '@env';
 
 
 function AxiosInstance() {
   
   // const accessToken = await AsyncStorage.getItem('token')
-  if (auth.currentUser == undefined) return null
+  // if (auth.currentUser == undefined) return null
   const axiosInstance = axios.create({
-    baseURL: `${DATABASE_URL}`,
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
-      Authorization: `Bearer ${auth.currentUser.stsTokenManager.accessToken}`,
-      uid: auth.currentUser.uid,
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
       'Content-Type': 'application/json'
     },
     // withCredentials: true

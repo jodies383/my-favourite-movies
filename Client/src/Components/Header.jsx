@@ -1,38 +1,35 @@
 import { useState, useEffect, useContext } from 'react'
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import InputAdornment from '@mui/material/InputAdornment';
-import axios from "axios"
-import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
 import { useNavigate } from "react-router";
-import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import Drawer from '@mui/material/Drawer';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import BookmarksIcon from '@mui/icons-material/Bookmarks';
-import CircularProgress from '@mui/material/CircularProgress';
-import TextField from '@mui/material/TextField';
-import AddIcon from '@mui/icons-material/Add';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Input from '@mui/material/Input';
-import UserContext from '../Contexts/UserContext';
-import { Delete } from '@mui/icons-material';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 
-const baseURL = "https://api.themoviedb.org/3/movie/popular?api_key=511ebf4540231b1f06e7bec72f6b4a05&language=en-US&page=1";
-const URL_BASE = 'https://favourite-movie-server.herokuapp.com'
+import UserContext from '../Contexts/UserContext';
+import AxiosInstance from "../Hooks/AxiosInstance";
+
+
+import {
+    AppBar,
+    Box,
+    Toolbar,
+    Typography,
+    Button,
+    IconButton,
+    InputAdornment,
+    Drawer,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    InputLabel,
+    FormControl,
+    Input,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+
+} from '@mui/material';
+
+import { Delete, Bookmarks, Menu, Add, Person } from '@mui/icons-material';
+
 
 export default function Header() {
     const [open, setOpen] = useState(false);
@@ -42,7 +39,8 @@ export default function Header() {
     const [playlist, setPlaylist] = useState('')
     const [allPlaylists, setAllPlaylists] = useState('')
     const [playlist_name, setPlaylist_Name] = useState('')
-    const { focusPlaylist, setFocusPlaylist } = useContext(UserContext);
+    const { username, focusPlaylist, setFocusPlaylist, setUsername } = useContext(UserContext);
+    const axios = AxiosInstance();
 
     const handleLogout = () => {
         localStorage.clear()
@@ -56,36 +54,35 @@ export default function Header() {
         setOpenDialog(false);
     };
     const deletePlaylist = () => {
+        if (username !== undefined)
 
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+            axios.delete(`/api/playlist?username=${username}&playlist_name=${focusPlaylist}`).then((response) => {
 
-        const username = localStorage.getItem('username')
-        axios.delete(`${URL_BASE}/api/playlist?username=${username}&playlist_name=${focusPlaylist}`).then((response) => {
-
-            handleClose()
-        })
+                handleClose()
+            })
     }
     useEffect(() => {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+        if (username !== undefined)
+            if (username == undefined) setUsername(localStorage.getItem('username'))
 
-        const username = localStorage.getItem('username')
-        axios.get(`${URL_BASE}/api/playlists/${username}`).then((response) => {
+
+        axios.get(`/api/playlists/${username}`).then((response) => {
             const { data } = response
             setAllPlaylists(data.playlist)
-            console.log(allPlaylists)
+
         })
-    }, [focusPlaylist]);
+    }, [username, focusPlaylist, allPlaylists]);
 
     const createNewPlaylist = () => {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+        if (username !== undefined)
 
-        const username = localStorage.getItem('username')
-        axios.post(`${URL_BASE}/api/new_playlist/${username}`, { playlist_name }).then((response) => {
-            axios.get(`${URL_BASE}/api/playlists/${username}`).then((response) => {
-                const { data } = response
-                setAllPlaylists(data.playlist)
+            axios.post(`/api/new_playlist/${username}`, { playlist_name }).then((response) => {
+                axios.get(`/api/playlists/${username}`).then((response) => {
+                    const { data } = response
+                    setAllPlaylists(data.playlist)
+                })
             })
-        })
+        setPlaylist_Name('')
     }
 
     const handleChange = () => (event) => {
@@ -93,23 +90,22 @@ export default function Header() {
     };
 
     useEffect(() => {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
-        const username = localStorage.getItem('username')
-        axios.get(`${URL_BASE}/api/all_playlist_titles/${username}`).then((response) => {
-            const { data } = response
-            console.log(data)
-            setPlaylist(data.playlist)
-            setUser(data.user)
-            //console.log(results)
+        if (username !== undefined)
 
-        });
+            axios.get(`/api/all_playlist_titles/${username}`).then((response) => {
+                const { data } = response
+                console.log(data)
+                setPlaylist(data.playlist)
+                setUser(data.user)
+                //console.log(results)
+
+            });
     }, []);
-
 
     return (
         <div className="App">
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
+            <Box sx={{ flexGrow: 1, }}>
+                <AppBar position="static" sx={{ backgroundColor: '#2c3440' }}>
                     <Toolbar>
                         <IconButton
                             size="large"
@@ -119,24 +115,24 @@ export default function Header() {
                             sx={{ mr: 2 }}
                             onClick={() => setOpen(true)}
                         >
-                            <MenuIcon />
+                            <Menu />
                         </IconButton>
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            <p>My Favourite Movies</p>
+                            <h2>🍿 my favourite movies</h2>
                         </Typography>
                         <Button color="inherit" onClick={handleLogout}>Logout</Button>
                     </Toolbar>
                 </AppBar>
             </Box>
 
-            <Drawer open={open} anchor={"left"} onClose={() => setOpen(false)} style={{ textAlign: 'center' }}>
+            <Drawer open={open} anchor={"left"} onClose={() => setOpen(false)} style={{ textAlign: 'center', margin: 5 }}>
+                <Box sx={{ backgroundColor: '#2c3440', color: 'white' }}>
 
-                {user ? user.map((res, index) =>
-
-                    <h2 key={index}>Hi {res.first_name} {res.last_name}</h2>
-                ) : null}
-                <hr />
-                <FormControl variant="standard">
+                    {user ? user.map((res, index) =>
+                        <h2 key={index}><Person /> {res.first_name} {res.last_name}</h2>
+                    ) : null}
+                </Box>
+                <FormControl variant="standard" style={{ margin: 10 }}>
                     <InputLabel htmlFor="input-with-icon-adornment">
                         Create new playlist
                     </InputLabel>
@@ -147,19 +143,19 @@ export default function Header() {
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton onClick={() => createNewPlaylist()}>
-                                    <AddIcon />
+                                    <Add />
                                 </IconButton>
                             </InputAdornment>
                         }
                     />
                 </FormControl>
-                <div style={{ width: 250 }} onClick={() => setOpen(false)}>
+                <div style={{ width: 250, margin: 10 }} onClick={() => setOpen(false)}>
 
-                    {playlist ? allPlaylists.map((res, index) =>
+                    {allPlaylists.length > 0 ? allPlaylists.map((res, index) =>
                         <ListItem key={index} >
-                            <ListItemIcon><BookmarksIcon /></ListItemIcon>
+                            <ListItemIcon><Bookmarks /></ListItemIcon>
                             <ListItemText primary={`${res.playlist_name}`} onClick={() => { navigate('/my-favourite-movies/Favourites'); setFocusPlaylist(res.playlist_name) }} sx={{ cursor: 'pointer' }} />
-                            <Delete onClick={() => { handleClickOpen(); setFocusPlaylist(res.playlist_name) }} sx={{ cursor: 'pointer' }} />
+                            <Delete style={{ color: 'grey' }} onClick={() => { handleClickOpen(); setFocusPlaylist(res.playlist_name) }} sx={{ cursor: 'pointer' }} />
                         </ListItem>
                     )
                         : null}

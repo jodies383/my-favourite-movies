@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from "react-router";
+import UserContext from '../Contexts/UserContext';
 import {
     FormControl,
     InputLabel,
-    Input,
-    FormHelperText,
     FormGroup,
     AppBar,
     Box,
@@ -14,43 +13,47 @@ import {
     IconButton,
     OutlinedInput,
     InputAdornment,
-    FilledInput,
-    TextField,
+    Snackbar,
 } from '@mui/material';
-
-import { Visibility, VisibilityOff, } from '@mui/icons-material';
-
-import axios from 'axios';
-
-
+import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
+import AxiosInstance from "../Hooks/AxiosInstance";
+import * as React from 'react';
 function Login() {
     const navigate = useNavigate();
+    const { username, setUsername } = useContext(UserContext);
+    const axios = AxiosInstance();
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('')
     const [values, setValues] = useState({
         username: '',
         password: ''
     });
     const handleLogin = () => {
         axios
-            .post(`https://favourite-movie-server.herokuapp.com/api/login`, { username: values.username, password: values.password })
+            .post(`/api/login`, { username: values.username, password: values.password })
             .then((result) => {
                 const { token } = result.data;
                 if (!result) return (
                     <CircularProgress />
-                );
+                )
                 if (result.data.message == 'unregistered') {
-                    console.log('this username has not been registered')
+                    setMessage('this username has not been registered')
+                    handleClick()
 
                 } else if (result.data.message == 'unmatched') {
-                    console.log('incorrect username or password')
+                    setMessage('incorrect username or password')
+                    handleClick()
 
                 } else {
-                    console.log('login successful')
-                    localStorage.setItem('username', values.username)
+                    setUsername(values.username)
                     localStorage.setItem('token', token);
+                    localStorage.setItem('username', values.username);
+                    // console.log('login successful')
 
                     navigate("/my-favourite-movies/Home");
                 }
             })
+        setValues({ username: '', password: '' })
 
     }
     const handleChange = (prop) => (event) => {
@@ -67,7 +70,29 @@ function Login() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+    const handleClick = () => {
+        setOpen(true);
+    };
 
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
+    const action = (
+        <React.Fragment>
+            <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleClose}
+            >
+                <Close fontSize="small" />
+            </IconButton>
+        </React.Fragment>
+    );
     return (
         <div className="App">
             <Box sx={{ flexGrow: 1 }}>
@@ -118,8 +143,16 @@ function Login() {
 
                 </FormGroup>
             </Box>
+            <div>
+                <Snackbar
+                    open={open}
+                    autoHideDuration={5000}
+                    onClose={handleClose}
+                    message={message}
+                    action={action}
+                />
+            </div>
         </div>
     )
 }
-
 export default Login

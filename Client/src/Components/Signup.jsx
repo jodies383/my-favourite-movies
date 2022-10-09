@@ -5,28 +5,21 @@ import {
     Box,
     FormControl,
     InputLabel,
-    Input,
-    FormHelperText,
     FormGroup,
     Toolbar,
     Typography,
     Button,
     IconButton,
-    FilledInput,
     OutlinedInput,
     InputAdornment,
-    TextField,
-} from '@mui/material';
-import {
-    Visibility,
-    VisibilityOff,
-} from '@mui/icons-material';
+    Snackbar,
 
-import axios from 'axios';
+} from '@mui/material';
+import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
+import AxiosInstance from "../Hooks/AxiosInstance";
+import * as React from 'react';
 
 function SignUp() {
-
-
     const navigate = useNavigate();
     const [values, setValues] = useState({
         firstName: '',
@@ -34,10 +27,13 @@ function SignUp() {
         username: '',
         password: ''
     });
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('')
+    const axios = AxiosInstance();
 
     const handleSignUp = () => {
         axios
-            .post(`https://favourite-movie-server.herokuapp.com/api/register`, { username: values.username, password: values.password, firstName: values.firstName, lastName: values.lastName })
+            .post(`/api/register`, { username: values.username, password: values.password, firstName: values.firstName, lastName: values.lastName })
             .then((result) => {
                 if (result.data.message == 'success') {
 
@@ -46,9 +42,11 @@ function SignUp() {
 
 
                 } else {
-                    console.log('this username has already been registered')
+                    setMessage('this username has already been registered')
+                    handleClick()
                 }
             });
+            setValues({firstName: '', lastName: '', username: '', password: ''})
     }
     const handleChange = (prop) => (event) => {
         setValues({ ...values, [prop]: event.target.value });
@@ -64,6 +62,30 @@ function SignUp() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+
+    const handleClick = () => {
+        setOpen(true);
+    };
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
+    const action = (
+        <React.Fragment>
+            <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleClose}
+            >
+                <Close fontSize="small" />
+            </IconButton>
+        </React.Fragment>
+    );
 
     return (
         <div className="App">
@@ -134,6 +156,15 @@ function SignUp() {
                 </FormGroup>
 
             </Box>
+            <div>
+                <Snackbar
+                    open={open}
+                    autoHideDuration={5000}
+                    onClose={handleClose}
+                    message={message}
+                    action={action}
+                />
+            </div>
         </div>
     )
 }
