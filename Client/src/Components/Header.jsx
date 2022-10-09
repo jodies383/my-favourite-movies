@@ -81,8 +81,8 @@ export default function Header() {
                     const { data } = response
                     setAllPlaylists(data.playlist)
                 })
+                // setPlaylist_Name('')
             })
-        setPlaylist_Name('')
     }
 
     const handleChange = () => (event) => {

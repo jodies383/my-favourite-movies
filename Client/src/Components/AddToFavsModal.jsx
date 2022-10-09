@@ -56,8 +56,8 @@ export default function AddToFavsModal() {
         const isInPlaylist = async () => {
             const inPlaylist = await axios.get(`/api/in_playlist?user_id=${1}&movie_id=${movieId}`)
             const { data } = inPlaylist
-            console.log(inPlaylist)
-            setMovieDetails(data)
+          
+            setMovieDetails(data.movieInfo)
         }
         isInPlaylist()
     }, [movieDetails]);
@@ -180,15 +180,15 @@ export default function AddToFavsModal() {
                 {Array.isArray(allPlaylists) ? allPlaylists.map((res, index) =>
 
                     <ListItem key={index}>
-                        {console.log(movieDetails) && movieDetails.map(movie => movie.playlist_name == res.playlist_name ?
-                            <input
+                        {Array.isArray(movieDetails) ? movieDetails.map((movie, index) => movie.playlist_name == res.playlist_name ?
+                            <input key={index}
                                 ref={ref}
                                 defaultChecked={true}
                                 type="checkbox"
                                 id="subscribe"
                                 name="subscribe"
-                            /> : <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />
-                        )}
+                            /> : null
+                        ): <Checkbox /> }
                         <ListItemIcon><Bookmarks /></ListItemIcon>
                         <ListItemText primary={`${res.playlist_name}`} onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }} />
                     </ListItem>
