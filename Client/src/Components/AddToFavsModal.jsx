@@ -30,6 +30,7 @@ export default function AddToFavsModal() {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const [dataRes, setDataRes] = useState(false);
+    const [movieDetails, setMovieDetails] = useState('')
     const ref = useRef(null);
 
     useEffect(() => {
@@ -51,6 +52,16 @@ export default function AddToFavsModal() {
             });
     }, [username]);
 
+    useEffect(() => {
+        const isInPlaylist = async () => {
+            const inPlaylist = await axios.get(`/api/in_playlist?user_id=${1}&movie_id=${movieId}`)
+            const { data } = inPlaylist
+            console.log(inPlaylist)
+            setMovieDetails(data)
+        }
+        isInPlaylist()
+    }, [movieDetails]);
+
     const createNewPlaylist = () => {
         if (username !== undefined)
             axios.post(`/api/new_playlist/${username}`, { playlist_name }).then((response) => {
@@ -60,6 +71,7 @@ export default function AddToFavsModal() {
                 })
             })
     }
+
 
     const removeMovie = (movie) => {
         if (username !== undefined)
@@ -166,8 +178,9 @@ export default function AddToFavsModal() {
             </FormControl>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                 {Array.isArray(allPlaylists) ? allPlaylists.map((res, index) =>
+
                     <ListItem key={index}>
-                        {checkPlaylist(res.playlist_name) === true ?
+                        {console.log(movieDetails) && movieDetails.map(movie => movie.playlist_name == res.playlist_name ?
                             <input
                                 ref={ref}
                                 defaultChecked={true}
@@ -175,7 +188,7 @@ export default function AddToFavsModal() {
                                 id="subscribe"
                                 name="subscribe"
                             /> : <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />
-                        }
+                        )}
                         <ListItemIcon><Bookmarks /></ListItemIcon>
                         <ListItemText primary={`${res.playlist_name}`} onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }} />
                     </ListItem>

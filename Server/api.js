@@ -127,9 +127,9 @@ module.exports = function (app, db) {
             const { user_id } = req.query
             const { movie_id } = req.query
 
-            const movieInfo = await db.one(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1 AND movie_id = $2`, [user_id, movie_id])
+            const movieInfo = await db.many(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1 AND movie_id = $2`, [user_id, movie_id])
 
-            res.json(movieInfo)
+            res.json({ movieInfo })
 
         } catch (err) {
             console.log(err)
