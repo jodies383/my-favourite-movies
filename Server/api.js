@@ -40,11 +40,11 @@ module.exports = function (app, db) {
     app.post('/api/register', async function (req, res, next) {
         try {
             const { username, password, firstName, lastName } = req.body;
-            
+
             let checkDuplicate = await db.manyOrNone(`SELECT * from users WHERE username = $1`, [username]);
             bcrypt.genSalt(saltRounds, async function (err, salt) {
                 bcrypt.hash(password, salt, async function (err, hash) {
-                    
+
                     if (checkDuplicate.length < 1) {
                         await db.none(`insert into users (username, password, first_name, last_name) values ($1, $2, $3, $4)`, [username, hash, firstName, lastName])
                         res.json({
@@ -60,7 +60,7 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-        
+
 
     })
     app.post('/api/login', async function (req, res, next) {
@@ -97,7 +97,7 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-     
+
     });
 
 
@@ -119,8 +119,22 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-   
+
     });
+
+    app.get('/api/in_playlist', verifyToken, async function (req, res) {
+        try {
+            const { user_id } = req.query
+            const { movie_id } = req.query
+
+            const movieInfo = await db.one(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1 AND movie_id = $2`, [user_id, movie_id])
+
+            res.json(movieInfo)
+
+        } catch (err) {
+            console.log(err)
+        }
+    })
 
     app.get('/api/playlist_titles/:username/:playlist_name', verifyToken, async function (req, res, next) {
         try {
@@ -139,7 +153,7 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-       
+
     });
 
     app.get('/api/in_playlist_titles', verifyToken, async function (req, res, next) {
@@ -152,7 +166,7 @@ module.exports = function (app, db) {
             const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
             const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
             const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where playlists.playlist_name = $1  AND user_id = $2 AND movie_id = $3`, [playlist_name, id, movie_id]);
-            if (playlist > 0){
+            if (playlist > 0) {
                 inPlaylist = true
             }
             res.json({
@@ -164,7 +178,7 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-       
+
     });
 
     app.get('/api/all_playlist_titles/:username', verifyToken, async function (req, res, next) {
@@ -183,10 +197,10 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-   
+
     });
 
-    
+
 
     app.post('/api/new_playlist/:username', verifyToken, async function (req, res, next) {
         try {
@@ -211,7 +225,7 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-     
+
     });
 
     app.post('/api/playlist_titles/:username/:playlist_name', verifyToken, async function (req, res, next) {
@@ -239,7 +253,7 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-      
+
     });
 
     app.delete('/api/playlist_titles', verifyToken, async function (req, res, next) {
@@ -273,7 +287,7 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-      
+
     });
 
     app.delete('/api/playlist', verifyToken, async function (req, res, next) {
@@ -297,7 +311,7 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err);
         }
-       
+
     });
 
 
