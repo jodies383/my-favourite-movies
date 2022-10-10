@@ -65,9 +65,10 @@ export default function AddToFavsModal() {
     const createNewPlaylist = () => {
         if (username !== undefined)
             axios.post(`/api/new_playlist/${username}`, { playlist_name }).then((response) => {
+                
                 axios.get(`/api/playlists/${username}`).then((response) => {
                     const { data } = response
-                    setAllPlaylists(data.playlist)
+                    setAllPlaylists(data.playlistNames)
                 })
             })
     }
@@ -187,8 +188,8 @@ export default function AddToFavsModal() {
                                 type="checkbox"
                                 id="subscribe"
                                 name="subscribe"
-                            /> : null
-                        ): <Checkbox /> }
+                            /> : <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />
+                        ): <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />}
                         <ListItemIcon><Bookmarks /></ListItemIcon>
                         <ListItemText primary={`${res.playlist_name}`} onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }} />
                     </ListItem>

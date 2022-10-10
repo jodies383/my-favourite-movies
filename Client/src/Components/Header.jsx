@@ -77,11 +77,13 @@ export default function Header() {
         if (username !== undefined)
 
             axios.post(`/api/new_playlist/${username}`, { playlist_name }).then((response) => {
+                console.log(response)
                 axios.get(`/api/playlists/${username}`).then((response) => {
                     const { data } = response
+                    console.log(data)
                     setAllPlaylists(data.playlist)
                 })
-                // setPlaylist_Name('')
+                setPlaylist_Name('')
             })
     }
 
@@ -94,7 +96,7 @@ export default function Header() {
 
             axios.get(`/api/all_playlist_titles/${username}`).then((response) => {
                 const { data } = response
-                console.log(data)
+             
                 setPlaylist(data.playlist)
                 setUser(data.user)
                 //console.log(results)
