@@ -68,7 +68,7 @@ export default function Header() {
 
         axios.get(`/api/playlists/${username}`).then((response) => {
             const { data } = response
-            setAllPlaylists(data.playlist)
+            setAllPlaylists(data.playlistNames)
 
         })
     }, [username, focusPlaylist, allPlaylists]);

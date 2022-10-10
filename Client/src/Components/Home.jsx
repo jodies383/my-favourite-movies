@@ -128,9 +128,9 @@ export default function Home() {
 
       <h2 style={{ textAlign: 'center' }}>{movieResults}</h2>
       <Box className='movieCard' spacing={2}>
-        {post.map((res, index) => <div key={index} container spacing={2} className='movieCardItems'>
+        {post.map((res, index) => <Box key={index} container spacing={2} className='movieCardItems'>
           
-          <div item xs={12}>
+          <Box item xs={12}>
             <img className='moviePoster' src={`https://image.tmdb.org/t/p/original/${res.poster_path}`} width='100%' />
             <br />
             {!res.id ? <CircularProgress /> : bookmark(res.id) == true ? <IconButton key={index} onClick={() => { handleOpen(); setMovieId(res.id) }}>
@@ -144,8 +144,8 @@ export default function Home() {
             <b>{res.release_date.substr(0, 4)}</b>
             <br />
             <b>{res.vote_average}★</b>
-          </div>
-        </div>
+          </Box>
+        </Box>
         )
         }
       </Box>

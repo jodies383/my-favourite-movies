@@ -35,7 +35,7 @@ export default function AddToFavsModal() {
 
     useEffect(() => {
         if (username !== undefined)
-            axios.get(`/api/all_playlist_titles/${username}`).then(async (response) => {
+            axios.get(`/api/playlists/${username}`).then(async (response) => {
                 const { data } = response
 
                 let playlistData = data.playlist
@@ -56,7 +56,7 @@ export default function AddToFavsModal() {
         const isInPlaylist = async () => {
             const inPlaylist = await axios.get(`/api/in_playlist?user_id=${1}&movie_id=${movieId}`)
             const { data } = inPlaylist
-          
+
             setMovieDetails(data.movieInfo)
         }
         isInPlaylist()
@@ -65,7 +65,7 @@ export default function AddToFavsModal() {
     const createNewPlaylist = () => {
         if (username !== undefined)
             axios.post(`/api/new_playlist/${username}`, { playlist_name }).then((response) => {
-                
+
                 axios.get(`/api/playlists/${username}`).then((response) => {
                     const { data } = response
                     setAllPlaylists(data.playlistNames)
@@ -98,16 +98,20 @@ export default function AddToFavsModal() {
     }
 
 
-    const checkPlaylist = async (playlistName) => {
-        if (username !== undefined) {
-            const response = await axios.get(`/api/playlist_titles/${username}/${playlistName}`)
-            const { data } = response;
-            const inPlaylist = data.playlist.some(movie => movie.movie_id == movieId)
-            if (inPlaylist == true) {
-                return true
-            } else return false
+    const checkPlaylist = (playlistName) => {
+        // if (username !== undefined) {
+        //     const response = await axios.get(`/api/playlist_titles/${username}/${playlistName}`)
+        //     const { data } = response;
+        //     const inPlaylist = data.playlist.some(movie => movie.movie_id == movieId)
+        //     if (inPlaylist == true) {
+        //         return true
+        //     } else return false
+        // }
+        // return
+        if (Array.isArray(movieDetails)) {
+            const result = movieDetails.map((movie, index) => movie.playlist_name == playlistName ? true : false)
+            return result
         }
-        return
     }
 
     const addToFavourites = async (id, playlist_name) => {
@@ -132,11 +136,13 @@ export default function AddToFavsModal() {
             });
     }
 
+
+
     useEffect(() => {
         if (username !== undefined)
             axios.get(`/api/playlists/${username}`).then((response) => {
                 const { data } = response
-                setAllPlaylists(data.playlist)
+                setAllPlaylists(data.playlistNames)
             })
     }, []);
 
@@ -181,7 +187,7 @@ export default function AddToFavsModal() {
                 {Array.isArray(allPlaylists) ? allPlaylists.map((res, index) =>
 
                     <ListItem key={index}>
-                        {Array.isArray(movieDetails) ? movieDetails.map((movie, index) => movie.playlist_name == res.playlist_name ?
+                        {checkPlaylist(res.playlist_name) == true ?
                             <input key={index}
                                 ref={ref}
                                 defaultChecked={true}
@@ -189,7 +195,7 @@ export default function AddToFavsModal() {
                                 id="subscribe"
                                 name="subscribe"
                             /> : <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />
-                        ): <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />}
+                        }
                         <ListItemIcon><Bookmarks /></ListItemIcon>
                         <ListItemText primary={`${res.playlist_name}`} onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }} />
                     </ListItem>

@@ -7,6 +7,7 @@ export const UserProvider = ({ children }) => {
 
   const [focusPlaylist, setFocusPlaylist] = useState();
   const [username, setUsername] = useState();
+  const [userId, setUserId] = useState()
   const [movieId, setMovieId] = useState()
 
   useEffect(() => {

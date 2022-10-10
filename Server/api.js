@@ -107,11 +107,11 @@ module.exports = function (app, db) {
 
 
             const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
-            const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
+            const user = await db.manyOrNone(`select * from users where username = $1`, [username])
             const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1`, [id]);
             const playlistNames = await db.many(`select * from playlists where user_id = $1`, [id])
             res.json({
-                user: userInfo,
+                user,
                 playlist,
                 playlistNames
             })
