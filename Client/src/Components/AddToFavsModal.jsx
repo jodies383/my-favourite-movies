@@ -80,6 +80,7 @@ export default function AddToFavsModal() {
             axios
                 .delete(`/api/playlist_titles?username=${username}&movie_id=${movieId}&playlist_name=${playlist}`)
                 .then((result) => {
+                    console.log(result.data.status)
                     // if (result.data.message == 'success') {
                     //     axios.get(`/api/playlist/${username}`).then(async (result) => {
                     //         setUser(result.data.user)
