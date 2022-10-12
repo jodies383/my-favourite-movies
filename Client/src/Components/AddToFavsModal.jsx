@@ -24,7 +24,7 @@ export default function AddToFavsModal() {
     const [playlist, setPlaylist] = useState('');
     const [playlist_name, setPlaylist_Name] = useState('');
     const [allPlaylists, setAllPlaylists] = useState('')
-    const { username, movieId, setMovieId } = useContext(UserContext);
+    const { username, movieId, setMovieId, userId } = useContext(UserContext);
     const [user, setUser] = useState('');
     const axios = AxiosInstance();
     const handleOpen = () => setOpen(true);
@@ -52,6 +52,7 @@ export default function AddToFavsModal() {
             });
     }, [username]);
 
+
     useEffect(() => {
         const isInPlaylist = async () => {
             const inPlaylist = await axios.get(`/api/in_playlist?user_id=${1}&movie_id=${movieId}`)
@@ -74,49 +75,40 @@ export default function AddToFavsModal() {
     }
 
 
-    const removeMovie = (movie) => {
+    const removeFromFavourites = (playlist) => {
         if (username !== undefined)
             axios
-                .delete(`/api/playlist?username=${username}&movie_id=${movie}`)
+                .delete(`/api/playlist_titles?username=${username}&movie_id=${movieId}&playlist_name=${playlist}`)
                 .then((result) => {
-                    if (result.data.message == 'success') {
-                        axios.get(`/api/playlist/${username}`).then(async (result) => {
-                            setUser(result.data.user)
-                            let res = result.data.playlist
-                            const movies = res.map(async element => {
-                                try {
-                                    const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
-                                    return result.data;
-                                } catch (e) {
-                                    return console.log(e);
-                                }
-                            });
-                            setPlaylist(await Promise.all(movies))
-                        });
-                    }
+                    // if (result.data.message == 'success') {
+                    //     axios.get(`/api/playlist/${username}`).then(async (result) => {
+                    //         setUser(result.data.user)
+                    //         let res = result.data.playlist
+                    //         const movies = res.map(async element => {
+                    //             try {
+                    //                 const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
+                    //                 return result.data;
+                    //             } catch (e) {
+                    //                 return console.log(e);
+                    //             }
+                    //         });
+                    //         setPlaylist(await Promise.all(movies))
+                    // });
+                    //}
                 });
     }
 
 
     const checkPlaylist = (playlistName) => {
-        // if (username !== undefined) {
-        //     const response = await axios.get(`/api/playlist_titles/${username}/${playlistName}`)
-        //     const { data } = response;
-        //     const inPlaylist = data.playlist.some(movie => movie.movie_id == movieId)
-        //     if (inPlaylist == true) {
-        //         return true
-        //     } else return false
-        // }
-        // return
         if (Array.isArray(movieDetails)) {
-            const result = movieDetails.map((movie, index) => movie.playlist_name == playlistName ? true : false)
+            const result = movieDetails.some((movie, index) => movie.playlist_name == playlistName)
             return result
         }
     }
 
-    const addToFavourites = async (id, playlist_name) => {
+    const addToFavourites = async (playlist_name) => {
         if (username !== undefined)
-            axios.post(`/api/playlist_titles/${username}/${playlist_name}`, { movieId: id }).then((result) => {
+            axios.post(`/api/playlist_titles/${username}/${playlist_name}`, { movieId: movieId }).then((result) => {
                 if (result.data.message == 'success') {
                     axios.get(`/api/playlist/${username}`).then(async (result) => {
                         setUser(result.data.user)
@@ -188,13 +180,15 @@ export default function AddToFavsModal() {
 
                     <ListItem key={index}>
                         {checkPlaylist(res.playlist_name) == true ?
-                            <input key={index}
+                            <Checkbox key={index}
                                 ref={ref}
                                 defaultChecked={true}
+                                onChange={() => removeFromFavourites(res.playlist_name)}
                                 type="checkbox"
                                 id="subscribe"
                                 name="subscribe"
-                            /> : <Checkbox onChange={() => addToFavourites(movieId, res.playlist_name)} />
+                            /> 
+                            : <Checkbox onChange={() => addToFavourites(res.playlist_name)} />
                         }
                         <ListItemIcon><Bookmarks /></ListItemIcon>
                         <ListItemText primary={`${res.playlist_name}`} onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }} />
