@@ -271,10 +271,7 @@ module.exports = function (app, db) {
                 let playlist = await db.one(`select id from playlists where playlist_name = $1 and user_id = $2`, [playlist_name, id])
                 const playlistId = playlist.id
 
-                await db.none(`delete from playlist_titles 
-                            JOIN playlists on playlist_titles.playlist_id=playlists.id 
-                            where movie_id = $1 and user_id = $2 
-                            and playlist_id = $3`, [movie_id, id, playlistId]);
+                await db.none(`delete from playlist_titles where movie_id = $1 and playlist_id = $2`, [movie_id, playlistId]);
                 res.json({
                     status: 'success'
                 })
