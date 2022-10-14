@@ -19,7 +19,7 @@ export const UserProvider = ({ children }) => {
     if (username !== undefined)
       axios.get(`/api/playlists/${username}`).then(async (res) => {
         const { data } = res
-        setUserId(data.user)
+        setUserId(data.user.id)
         setUserData(data)
       })
   }, [username, userId]);

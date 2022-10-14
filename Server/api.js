@@ -102,7 +102,7 @@ module.exports = function (app, db) {
 
     });
 
-    //returns a users playlists & playlist names
+    //returns a users info, playlists & playlist names
     app.get('/api/playlists/:username', verifyToken, async function (req, res) {
         try {
             const {username} = req.params
@@ -142,19 +142,15 @@ module.exports = function (app, db) {
         }
     })
     //returns movies in a given playlist for a given user
-    app.get('/api/playlist_titles/:username/:playlist_name', verifyToken, async function (req, res) {
+    app.get('/api/playlist_titles/:user_id/:playlist_name', verifyToken, async function (req, res) {
         try {
-            const { username } = req.params
+            const { user_id } = req.params
             const { playlist_name } = req.params
 
-            const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
-            const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
-            const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where playlists.playlist_name = $1  AND user_id = $2`, [playlist_name, id]);
+            const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where playlists.playlist_name = $1  AND user_id = $2`, [playlist_name, user_id]);
             res.json({
-                user: userInfo,
                 playlist
             })
-
 
         } catch (err) {
             console.log(err);

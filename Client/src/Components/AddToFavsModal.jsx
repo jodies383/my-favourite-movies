@@ -73,7 +73,7 @@ export default function AddToFavsModal() {
 
                 axios.get(`/api/playlists/${username}`).then((response) => {
                     const { data } = response
-                    console.log(data.user)
+                    console.log(data.user.id)
                     setPlaylistNames(data.playlistNames)
                 })
             })
