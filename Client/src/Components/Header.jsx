@@ -42,6 +42,16 @@ export default function Header() {
     const { username, focusPlaylist, setFocusPlaylist, setUsername } = useContext(UserContext);
     const axios = AxiosInstance();
 
+    useEffect(() => {
+        if (username == undefined) setUsername(localStorage.getItem('username'))
+        if (username !== undefined){
+            axios.get(`/api/playlists/${username}`).then((response) => {
+                const { data } = response
+                setAllPlaylists(data.playlistNames)
+
+            })}
+    }, [username, focusPlaylist, allPlaylists]);
+
     const handleLogout = () => {
         localStorage.clear()
         navigate("/my-favourite-movies/");
@@ -55,27 +65,14 @@ export default function Header() {
     };
     const deletePlaylist = () => {
         if (username !== undefined)
-
             axios.delete(`/api/playlist?username=${username}&playlist_name=${focusPlaylist}`).then((response) => {
-
                 handleClose()
+                navigate("/my-favourite-movies/Home");
             })
     }
-    useEffect(() => {
-        if (username !== undefined)
-            if (username == undefined) setUsername(localStorage.getItem('username'))
-
-
-        axios.get(`/api/playlists/${username}`).then((response) => {
-            const { data } = response
-            setAllPlaylists(data.playlistNames)
-
-        })
-    }, [username, focusPlaylist, allPlaylists]);
 
     const createNewPlaylist = () => {
         if (username !== undefined)
-
             axios.post(`/api/new_playlist/${username}`, { playlist_name }).then((response) => {
                 console.log(response)
                 axios.get(`/api/playlists/${username}`).then((response) => {
@@ -93,10 +90,9 @@ export default function Header() {
 
     useEffect(() => {
         if (username !== undefined)
-
             axios.get(`/api/all_playlist_titles/${username}`).then((response) => {
                 const { data } = response
-             
+
                 setPlaylist(data.playlist)
                 setUser(data.user)
                 //console.log(results)

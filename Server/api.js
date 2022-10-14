@@ -37,7 +37,8 @@ module.exports = function (app, db) {
 
     }
 
-    app.post('/api/register', async function (req, res, next) {
+    //register a user
+    app.post('/api/register', async function (req, res) {
         try {
             const { username, password, firstName, lastName } = req.body;
 
@@ -63,7 +64,8 @@ module.exports = function (app, db) {
 
 
     })
-    app.post('/api/login', async function (req, res, next) {
+    //login a user
+    app.post('/api/login', async function (req, res) {
         try {
             const { username } = req.body;
             const { password } = req.body;
@@ -100,14 +102,14 @@ module.exports = function (app, db) {
 
     });
 
-
-    app.get('/api/playlists/:username', verifyToken, async function (req, res, next) {
+    //returns a users playlists & playlist names
+    app.get('/api/playlists/:username', verifyToken, async function (req, res) {
         try {
-            const username = req.params.username
+            const {username} = req.params
 
 
             const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
-            const user = await db.manyOrNone(`select * from users where username = $1`, [username])
+            const user = await db.oneOrNone(`select * from users where username = $1`, [username])
             const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1`, [id]);
 
             const playlistNames = await db.many(`select * from playlists where user_id = $1`, [id])
@@ -125,6 +127,7 @@ module.exports = function (app, db) {
 
     });
 
+    //checks if a movie is in a users playlist
     app.get('/api/in_playlist', verifyToken, async function (req, res) {
         try {
             const { user_id } = req.query
@@ -138,8 +141,8 @@ module.exports = function (app, db) {
             console.log(err)
         }
     })
-
-    app.get('/api/playlist_titles/:username/:playlist_name', verifyToken, async function (req, res, next) {
+    //returns movies in a given playlist for a given user
+    app.get('/api/playlist_titles/:username/:playlist_name', verifyToken, async function (req, res) {
         try {
             const { username } = req.params
             const { playlist_name } = req.params
@@ -158,8 +161,8 @@ module.exports = function (app, db) {
         }
 
     });
-
-    app.get('/api/in_playlist_titles', verifyToken, async function (req, res, next) {
+    //returns a given movie in a given playlist
+    app.get('/api/in_playlist_titles', verifyToken, async function (req, res) {
         try {
             let inPlaylist = false
             const { username } = req.query
@@ -183,8 +186,8 @@ module.exports = function (app, db) {
         }
 
     });
-
-    app.get('/api/all_playlist_titles/:username', verifyToken, async function (req, res, next) {
+    //returns all movies for a given user
+    app.get('/api/all_playlist_titles/:username', verifyToken, async function (req, res) {
         try {
             const { username } = req.params
 
@@ -204,8 +207,8 @@ module.exports = function (app, db) {
     });
 
 
-
-    app.post('/api/new_playlist/:username', verifyToken, async function (req, res, next) {
+    //creates a new playlist
+    app.post('/api/new_playlist/:username', verifyToken, async function (req, res) {
         try {
             const username = req.params.username
             const { playlist_name } = req.body
@@ -231,7 +234,8 @@ module.exports = function (app, db) {
 
     });
 
-    app.post('/api/playlist_titles/:username/:playlist_name', verifyToken, async function (req, res, next) {
+    //inserts a movie into a given playlist
+    app.post('/api/playlist_titles/:username/:playlist_name', verifyToken, async function (req, res) {
         try {
             const { username } = req.params
             const { playlist_name } = req.params
@@ -259,35 +263,28 @@ module.exports = function (app, db) {
 
     });
 
-    app.delete('/api/playlist_titles', verifyToken, async function (req, res, next) {
+    //deletes a movie from a given playlist
+    app.delete('/api/playlist_titles', verifyToken, async function (req, res) {
+
+        const { username, movie_id, playlist_name } = req.query
 
         try {
+            const { id } = await db.one(`select id from users where username = $1`, [username])
 
-            const { username, movie_id, playlist_name } = req.query
+            let playlist = await db.one(`select id from playlists where playlist_name = $1 and user_id = $2`, [playlist_name, id])
+            const playlistId = playlist.id
 
-            try {
-                const { id } = await db.one(`select id from users where username = $1`, [username])
-
-                let playlist = await db.one(`select id from playlists where playlist_name = $1 and user_id = $2`, [playlist_name, id])
-                const playlistId = playlist.id
-
-                await db.none(`delete from playlist_titles where movie_id = $1 and playlist_id = $2`, [movie_id, playlistId]);
-                res.json({
-                    status: 'success'
-                })
-            } catch (err) {
-                res.json({
-                    status: 'success',
-                    error: err.stack
-                })
-            }
+            await db.none(`delete from playlist_titles where movie_id = $1 and playlist_id = $2`, [movie_id, playlistId]);
+            res.status(200).send('deleted');
         } catch (err) {
-            console.log(err);
+            res.status(400).send(err.message);
         }
+
 
     });
 
-    app.delete('/api/playlist', verifyToken, async function (req, res, next) {
+    //deletes a given playlist
+    app.delete('/api/playlist', verifyToken, async function (req, res) {
         try {
 
             const { username } = req.query

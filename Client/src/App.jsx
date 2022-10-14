@@ -5,6 +5,7 @@ import Home from './Components/Home'
 import Login from './Components/Login'
 import SignUp from './Components/Signup'
 import Favourites from './Components/Favourites'
+import AddToFavsModal from './Components/AddToFavsModal';
 import { UserProvider } from './Contexts/UserContext';
 import './App.css'
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="/my-favourite-movies/Login" element={<Login />} />
             <Route path="/my-favourite-movies/Home" element={<Home />} />
             <Route path="/my-favourite-movies/Favourites" element={<Favourites />} />
+            <Route path="/my-favourite-movies/AddToFavsModal" element={<AddToFavsModal />} />
           </Routes>
         </Router>
       </UserProvider>

@@ -20,37 +20,14 @@ export default function Home() {
   const [post, setPost] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [movieResults, setMovieResults] = useState('');
-  const [playlist, setPlaylist] = useState('');
-  const [allPlaylists, setAllPlaylists] = useState('')
-  const { username, setUsername, movieId, setMovieId } = useContext(UserContext);
-  const [user, setUser] = useState('')
+  const { username, setUsername, movieId, setMovieId, playlist, setPlaylist } = useContext(UserContext);
+  const [user, setUser] = useState('');
   const axios = AxiosInstance();
+
   const baseURL = "https://api.themoviedb.org/3/movie/popular?api_key=511ebf4540231b1f06e7bec72f6b4a05&language=en-US&page=1";
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  useEffect(() => {
-    if (username == undefined) setUsername(localStorage.getItem('username'))
-    if (username !== undefined)
-      axios.get(`/api/all_playlist_titles/${username}`).then(async (response) => {
-        const { data } = response
-
-        let playlistData = data.playlist
-        const movies = playlistData.map(async element => {
-          try {
-            const result = await axios
-              .get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
-            console.log(result.data);
-            return result.data;
-          } catch (e) {
-            return console.log(e);
-          }
-        });
-        playlistData = await Promise.all(movies)
-        setPlaylist(playlistData)
-      });
-  }, [username]);
 
   useEffect(() => {
     axios.get(baseURL).then((response) => {
@@ -59,8 +36,7 @@ export default function Home() {
       setMovieResults(`Trending movies`)
     });
   }, []);
-
-
+  
   const searchMovies = async () => {
     if (searchInput) {
       await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=511ebf4540231b1f06e7bec72f6b4a05&query=${searchInput}`).then((result) => {
@@ -90,14 +66,6 @@ export default function Home() {
     return
   }
 
-  useEffect(() => {
-    if (username !== undefined)
-      axios.get(`/api/playlists/${username}`).then((response) => {
-        const { data } = response
-        setAllPlaylists(data.playlist)
-      })
-  }, []);
-
   if (!post) return null;
 
   return (
@@ -117,20 +85,23 @@ export default function Home() {
             </InputAdornment>}
         />
       </Box>
+
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
+        <div>
         <AddToFavsModal />
+        </div>
       </Modal>
 
       <h2 style={{ textAlign: 'center' }}>{movieResults}</h2>
-      <Box className='movieCard' spacing={2}>
-        {post.map((res, index) => <Box key={index} container spacing={2} className='movieCardItems'>
+      <Box className='movieCard' >
+        {post.map((res, index) => <Box key={index}  className='movieCardItems'>
           
-          <Box item xs={12}>
+          <Box>
             <img className='moviePoster' src={`https://image.tmdb.org/t/p/original/${res.poster_path}`} width='100%' />
             <br />
             {!res.id ? <CircularProgress /> : bookmark(res.id) == true ? <IconButton key={index} onClick={() => { handleOpen(); setMovieId(res.id) }}>

@@ -13,7 +13,8 @@ import {
     FormControl,
     Input,
     InputLabel,
-    Checkbox
+    Checkbox,
+    Modal
 } from '@mui/material';
 import { Bookmarks, Add } from '@mui/icons-material';
 import AxiosInstance from "../Hooks/AxiosInstance";
@@ -23,8 +24,9 @@ export default function AddToFavsModal() {
     const navigate = useNavigate();
     const [playlist, setPlaylist] = useState('');
     const [playlist_name, setPlaylist_Name] = useState('');
-    const [allPlaylists, setAllPlaylists] = useState('')
-    const { username, movieId, setMovieId, userId } = useContext(UserContext);
+
+    const { username, movieId, setMovieId, userId, setUsername, playlistNames, setPlaylistNames } = useContext(UserContext);
+
     const [user, setUser] = useState('');
     const axios = AxiosInstance();
     const handleOpen = () => setOpen(true);
@@ -34,6 +36,7 @@ export default function AddToFavsModal() {
     const ref = useRef(null);
 
     useEffect(() => {
+        if (username == undefined) setUsername(localStorage.getItem('username'))
         if (username !== undefined)
             axios.get(`/api/playlists/${username}`).then(async (response) => {
                 const { data } = response
@@ -55,7 +58,8 @@ export default function AddToFavsModal() {
 
     useEffect(() => {
         const isInPlaylist = async () => {
-            const inPlaylist = await axios.get(`/api/in_playlist?user_id=${1}&movie_id=${movieId}`)
+          
+            const inPlaylist = await axios.get(`/api/in_playlist?user_id=${userId}&movie_id=${movieId}`)
             const { data } = inPlaylist
 
             setMovieDetails(data.movieInfo)
@@ -69,7 +73,8 @@ export default function AddToFavsModal() {
 
                 axios.get(`/api/playlists/${username}`).then((response) => {
                     const { data } = response
-                    setAllPlaylists(data.playlistNames)
+                    console.log(data.user)
+                    setPlaylistNames(data.playlistNames)
                 })
             })
     }
@@ -81,28 +86,13 @@ export default function AddToFavsModal() {
                 .delete(`/api/playlist_titles?username=${username}&movie_id=${movieId}&playlist_name=${playlist}`)
                 .then((result) => {
                     console.log(result.data.status)
-                    // if (result.data.message == 'success') {
-                    //     axios.get(`/api/playlist/${username}`).then(async (result) => {
-                    //         setUser(result.data.user)
-                    //         let res = result.data.playlist
-                    //         const movies = res.map(async element => {
-                    //             try {
-                    //                 const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
-                    //                 return result.data;
-                    //             } catch (e) {
-                    //                 return console.log(e);
-                    //             }
-                    //         });
-                    //         setPlaylist(await Promise.all(movies))
-                    // });
-                    //}
                 });
     }
 
 
     const checkPlaylist = (playlistName) => {
         if (Array.isArray(movieDetails)) {
-            const result = movieDetails.some((movie, index) => movie.playlist_name == playlistName)
+            const result = movieDetails.some(movie => movie.playlist_name == playlistName)
             return result
         }
     }
@@ -123,21 +113,10 @@ export default function AddToFavsModal() {
                             }
                         });
                         setPlaylist(await Promise.all(movies))
-                        console.log(playlist)
                     });
                 }
             });
     }
-
-
-
-    useEffect(() => {
-        if (username !== undefined)
-            axios.get(`/api/playlists/${username}`).then((response) => {
-                const { data } = response
-                setAllPlaylists(data.playlistNames)
-            })
-    }, []);
 
     return (
         <Box
@@ -176,9 +155,8 @@ export default function AddToFavsModal() {
                     }
                 />
             </FormControl>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                {Array.isArray(allPlaylists) ? allPlaylists.map((res, index) =>
-
+            <Typography id="modal-modal-description" sx={{ mt: 2 }} component={'span'} variant={'body2'}>
+                {Array.isArray(playlistNames) ? playlistNames.map((res, index) =>
                     <ListItem key={index}>
                         {checkPlaylist(res.playlist_name) == true ?
                             <Checkbox key={index}
@@ -188,17 +166,15 @@ export default function AddToFavsModal() {
                                 type="checkbox"
                                 id="subscribe"
                                 name="subscribe"
-                            /> 
+                            />
                             : <Checkbox onChange={() => addToFavourites(res.playlist_name)} />
                         }
                         <ListItemIcon><Bookmarks /></ListItemIcon>
                         <ListItemText primary={`${res.playlist_name}`} onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }} />
-                    </ListItem>
-                )
-                    : <CircularProgress />}
+                    </ListItem>)
+                    : <CircularProgress />
+                }
             </Typography>
-
-
         </Box>
     )
 }
