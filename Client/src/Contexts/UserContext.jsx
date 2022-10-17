@@ -35,7 +35,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (username == undefined) setUsername(localStorage.getItem('username'))
-    if (username !== undefined)
+    if (userId !== undefined)
       axios.get(`/api/all_playlist_titles/${userId}`).then(async (response) => {
         const { data } = response
 
@@ -57,7 +57,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (username == undefined) setUsername(localStorage.getItem('username'))
-    if (username !== undefined)
+    if (userId !== undefined)
       axios.get(`/api/playlists/${userId}`).then((response) => {
         const { data } = response
         setPlaylistNames(data.playlistNames)
