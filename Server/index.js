@@ -28,8 +28,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
-const API = require('./api');
-API(app, db);
+const Routes = require('./routes');
+Routes(app, db);
 
 //configure the port number using and environment number
 var portNumber = process.env.PORT || 4000;

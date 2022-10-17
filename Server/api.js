@@ -9,101 +9,9 @@ module.exports = function (app, db) {
         });
     });
 
-    function verifyToken(req, res, next) {
-        const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
-        if (!req.headers.authorization || !token) {
-            res.sendStatus(401);
-            return;
-        }
-        try {
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-            const { username } = decoded;
-            //check if username matches logged in user
-            if (username) {
-                next();
-            } else {
-                res.status(403).json({
-                    message: 'unauthorized'
-                });
-            }
-        } catch (err) {
-            if (err && 500) {
-                res.json({
-                    message: 'expired'
-                })
-            }
-
-        }
-
-    }
-
-    //register a user
-    app.post('/api/register', async function (req, res) {
-        try {
-            const { username, password, firstName, lastName } = req.body;
-
-            let checkDuplicate = await db.manyOrNone(`SELECT * from users WHERE username = $1`, [username]);
-            bcrypt.genSalt(saltRounds, async function (err, salt) {
-                bcrypt.hash(password, salt, async function (err, hash) {
-
-                    if (checkDuplicate.length < 1) {
-                        await db.none(`insert into users (username, password, first_name, last_name) values ($1, $2, $3, $4)`, [username, hash, firstName, lastName])
-                        res.json({
-                            message: 'success'
-                        });
-                    } else {
-                        res.json({
-                            message: 'duplicate'
-                        });
-                    }
-                });
-            });
-        } catch (err) {
-            console.log(err);
-        }
-
-
-    })
-    //login a user
-    app.post('/api/login', async function (req, res) {
-        try {
-            const { username } = req.body;
-            const { password } = req.body;
-            const token = jwt.sign({
-                username
-            }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '4hr' });
-            let checkUser = await db.manyOrNone(`SELECT id from users WHERE username = $1`, [username]);
-            if (checkUser.length < 1) {
-                res.json({
-                    token,
-                    message: 'unregistered'
-                });
-            } else {
-
-                let checkPassword = await db.oneOrNone(`SELECT password from users WHERE username = $1`, [username]);
-
-                const match = await bcrypt.compare(password, checkPassword.password);
-
-                if (match) {
-                    res.json({
-                        token,
-                        message: 'success'
-                    });
-                } else {
-                    res.json({
-                        token,
-                        message: 'unmatched'
-                    });
-                }
-            }
-        } catch (err) {
-            console.log(err);
-        }
-
-    });
-
-    //returns a users info, playlists & playlist names
-    app.get('/api/playlists/:username', verifyToken, async function (req, res) {
+    //returns a users info, playlists & playlist names - separate user info
+    /// api/playlists/:username
+   const getUserPlaylists = async function (req, res) {
         try {
             const {username} = req.params
 
@@ -125,10 +33,11 @@ module.exports = function (app, db) {
             console.log(err);
         }
 
-    });
+    };
 
     //checks if a movie is in a users playlist
-    app.get('/api/in_playlist', verifyToken, async function (req, res) {
+    // /api/in_playlist
+    const checkMoviesInPlaylist = async function (req, res) {
         try {
             const { user_id } = req.query
             const { movie_id } = req.query
@@ -140,9 +49,11 @@ module.exports = function (app, db) {
         } catch (err) {
             console.log(err)
         }
-    })
+    };
+
     //returns movies in a given playlist for a given user
-    app.get('/api/playlist_titles/:username/:playlist_name', verifyToken, async function (req, res) {
+    // /api/playlist_titles/:username/:playlist_name
+    const getMoviesInPlaylist = async function (req, res) {
         try {
             const { username } = req.params
             const { playlist_name } = req.params
@@ -160,34 +71,36 @@ module.exports = function (app, db) {
             console.log(err);
         }
 
-    });
+    };
     //returns a given movie in a given playlist
-    app.get('/api/in_playlist_titles', verifyToken, async function (req, res) {
-        try {
-            let inPlaylist = false
-            const { username } = req.query
-            const { playlist_name } = req.query
-            const { movie_id } = req.query
+    // app.get('/api/in_playlist_titles', verifyToken, async function (req, res) {
+    //     try {
+    //         let inPlaylist = false
+    //         const { username } = req.query
+    //         const { playlist_name } = req.query
+    //         const { movie_id } = req.query
 
-            const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
-            const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
-            const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where playlists.playlist_name = $1  AND user_id = $2 AND movie_id = $3`, [playlist_name, id, movie_id]);
-            if (playlist > 0) {
-                inPlaylist = true
-            }
-            res.json({
-                user: userInfo,
-                inPlaylist
-            })
+    //         const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
+    //         const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
+    //         const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where playlists.playlist_name = $1  AND user_id = $2 AND movie_id = $3`, [playlist_name, id, movie_id]);
+    //         if (playlist > 0) {
+    //             inPlaylist = true
+    //         }
+    //         res.json({
+    //             user: userInfo,
+    //             inPlaylist
+    //         })
 
 
-        } catch (err) {
-            console.log(err);
-        }
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
 
-    });
+    // });
+    
     //returns all movies for a given user
-    app.get('/api/all_playlist_titles/:username', verifyToken, async function (req, res) {
+    // /api/all_playlist_titles/:username
+    const getAllMovies = async function (req, res) {
         try {
             const { username } = req.params
 
@@ -204,11 +117,12 @@ module.exports = function (app, db) {
             console.log(err);
         }
 
-    });
+    };
 
 
     //creates a new playlist
-    app.post('/api/new_playlist/:username', verifyToken, async function (req, res) {
+    // /api/new_playlist/:username
+    const createPlaylist = async function (req, res) {
         try {
             const username = req.params.username
             const { playlist_name } = req.body
@@ -232,10 +146,11 @@ module.exports = function (app, db) {
             console.log(err);
         }
 
-    });
+    };
 
     //inserts a movie into a given playlist
-    app.post('/api/playlist_titles/:username/:playlist_name', verifyToken, async function (req, res) {
+    // /api/playlist_titles/:username/:playlist_name
+    const addToPlaylist = async function (req, res) {
         try {
             const { username } = req.params
             const { playlist_name } = req.params
@@ -261,10 +176,11 @@ module.exports = function (app, db) {
             console.log(err);
         }
 
-    });
+    };
 
     //deletes a movie from a given playlist
-    app.delete('/api/playlist_titles', verifyToken, async function (req, res) {
+    // /api/playlist_titles
+    const deleteFromPlaylist = async function (req, res) {
 
         const { username, movie_id, playlist_name } = req.query
 
@@ -281,10 +197,11 @@ module.exports = function (app, db) {
         }
 
 
-    });
+    };
 
     //deletes a given playlist
-    app.delete('/api/playlist', verifyToken, async function (req, res) {
+    // /api/playlist
+    const deletePlaylist = async function (req, res) {
         try {
 
             const { username } = req.query
@@ -306,7 +223,16 @@ module.exports = function (app, db) {
             console.log(err);
         }
 
-    });
+    };
 
-
+    return {
+        getUserPlaylists,
+        checkMoviesInPlaylist,
+        getMoviesInPlaylist,
+        getAllMovies,
+        createPlaylist,
+        addToPlaylist,
+        deleteFromPlaylist,
+        deletePlaylist
+      };
 }
