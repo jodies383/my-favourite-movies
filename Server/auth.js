@@ -1,5 +1,7 @@
 module.exports = function (db) {
-
+ const jwt = require('jsonwebtoken')
+    const bcrypt = require('bcrypt');
+    const saltRounds = 10;
 
 const verifyToken = function (req, res, next) {
     const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
