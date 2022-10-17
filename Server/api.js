@@ -4,7 +4,7 @@ module.exports = function (db) {
         res.json({ name: 'Joe' })
     }
 
-    const getUser = async (req, res) => {
+    const getUser = async function (req, res) {
         try {
             const { username } = req.params
             const user = await db.one(`SELECT * from users WHERE username = $1`, [username])

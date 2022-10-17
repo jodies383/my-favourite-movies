@@ -28,6 +28,12 @@ function Login() {
         username: '',
         password: ''
     });
+
+    axios.get(`/api/user/harryP`).then(async (res) => {
+        const {data} = res
+        console.log(data.user.id)
+      })
+
     const handleLogin = () => {
         axios
             .post(`/api/login`, { username: values.username, password: values.password })
@@ -48,7 +54,6 @@ function Login() {
                     setUsername(values.username)
                     localStorage.setItem('token', token);
                     localStorage.setItem('username', values.username);
-                    // console.log('login successful')
 
                     navigate("/my-favourite-movies/Home");
                 }
