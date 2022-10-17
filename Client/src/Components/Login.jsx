@@ -29,11 +29,6 @@ function Login() {
         password: ''
     });
 
-    axios.get(`/api/user/harryP`).then(async (res) => {
-        const {data} = res
-        console.log(data.user.id)
-      })
-
     const handleLogin = () => {
         axios
             .post(`/api/login`, { username: values.username, password: values.password })
