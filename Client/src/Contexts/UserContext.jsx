@@ -22,7 +22,7 @@ export const UserProvider = ({ children }) => {
       setUserId(data.user.id)
       setUserData(data)
     })
-  }, [])
+  }, [username, userId])
   // useEffect(() => {
   //   if (username == undefined || null) setUsername(localStorage.getItem('username'))
   //   if (username !== undefined)
