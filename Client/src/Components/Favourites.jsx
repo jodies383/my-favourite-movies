@@ -51,7 +51,7 @@ export default function Favourites() {
 
   const removeMovie = (movie) => {
     axios
-      .delete(`/api/playlist?username=${username}&movie_id=${movie}`)
+      .delete(`/api/playlist?username=${userId}&movie_id=${movie}`)
       .then((result) => {
         openSnackbar()
       });

@@ -17,17 +17,26 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if (username == undefined || null) setUsername(localStorage.getItem('username'))
     if (username !== undefined)
-      axios.get(`/api/playlists/${username}`).then(async (res) => {
-        const { data } = res
-        setUserId(data.user.id)
-        setUserData(data)
-      })
-  }, [username, userId]);
+    axios.get(`/api/user/${username}`).then(async (res) => {
+      const {data} = res
+      setUserId(data.user.id)
+      setUserData(data)
+    })
+  }, [])
+  // useEffect(() => {
+  //   if (username == undefined || null) setUsername(localStorage.getItem('username'))
+  //   if (username !== undefined)
+  //     axios.get(`/api/playlists/${username}`).then(async (res) => {
+  //       const { data } = res
+  //       setUserId(data.user.id)
+  //       setUserData(data)
+  //     })
+  // }, [username, userId]);
 
   useEffect(() => {
     if (username == undefined) setUsername(localStorage.getItem('username'))
     if (username !== undefined)
-      axios.get(`/api/all_playlist_titles/${username}`).then(async (response) => {
+      axios.get(`/api/all_playlist_titles/${userId}`).then(async (response) => {
         const { data } = response
 
         let playlistData = data.playlist
@@ -49,7 +58,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if (username == undefined) setUsername(localStorage.getItem('username'))
     if (username !== undefined)
-      axios.get(`/api/playlists/${username}`).then((response) => {
+      axios.get(`/api/playlists/${userId}`).then((response) => {
         const { data } = response
         setPlaylistNames(data.playlistNames)
       })

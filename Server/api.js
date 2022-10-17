@@ -1,25 +1,33 @@
 module.exports = function (db) {
-    // app.get('/api/test', function (req, res) {
-    //     res.json({
-    //         name: 'joe'
-    //     });
-    // });
 
+    const test = (req, res) => {
+        res.json({ name: 'Joe' })
+    }
+
+    const getUser = async (req, res) => {
+        try {
+            const { username } = req.params
+            const user = await db.one(`SELECT * from users WHERE username = $1`, [username])
+            res.json(user)
+        } catch (err) {
+            console.log(err);
+        }
+    }
     //returns a users info, playlists & playlist names - separate user info
     /// api/playlists/:username
-   const getUserPlaylists = async function (req, res) {
+    const getUserPlaylists = async function (req, res) {
         try {
-            const {username} = req.params
+            const { id } = req.params
 
 
-            const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
-            const user = await db.oneOrNone(`select * from users where username = $1`, [username])
+            // const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
+            // const user = await db.oneOrNone(`select * from users where username = $1`, [username])
             const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1`, [id]);
 
             const playlistNames = await db.many(`select * from playlists where user_id = $1`, [id])
 
             res.json({
-                user,
+                //user,
                 playlist,
                 playlistNames
             })
@@ -35,8 +43,7 @@ module.exports = function (db) {
     // /api/in_playlist
     const checkMoviesInPlaylist = async function (req, res) {
         try {
-            const { user_id } = req.query
-            const { movie_id } = req.query
+            const { user_id, movie_id } = req.query
 
             const movieInfo = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1 AND movie_id = $2`, [user_id, movie_id])
 
@@ -51,14 +58,13 @@ module.exports = function (db) {
     // /api/playlist_titles/:username/:playlist_name
     const getMoviesInPlaylist = async function (req, res) {
         try {
-            const { username } = req.params
-            const { playlist_name } = req.params
+            const { playlist_name, id} = req.params
 
-            const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
-            const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
+            // const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
+            // const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
             const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where playlists.playlist_name = $1  AND user_id = $2`, [playlist_name, id]);
             res.json({
-                user: userInfo,
+                //user: userInfo,
                 playlist
             })
 
@@ -68,43 +74,18 @@ module.exports = function (db) {
         }
 
     };
-    //returns a given movie in a given playlist
-    // app.get('/api/in_playlist_titles', verifyToken, async function (req, res) {
-    //     try {
-    //         let inPlaylist = false
-    //         const { username } = req.query
-    //         const { playlist_name } = req.query
-    //         const { movie_id } = req.query
 
-    //         const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
-    //         const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
-    //         const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where playlists.playlist_name = $1  AND user_id = $2 AND movie_id = $3`, [playlist_name, id, movie_id]);
-    //         if (playlist > 0) {
-    //             inPlaylist = true
-    //         }
-    //         res.json({
-    //             user: userInfo,
-    //             inPlaylist
-    //         })
-
-
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-
-    // });
-    
     //returns all movies for a given user
     // /api/all_playlist_titles/:username
     const getAllMovies = async function (req, res) {
         try {
-            const { username } = req.params
+            const { id } = req.params
 
-            const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
-            const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
+            // const { id } = await db.oneOrNone(`select id from users where username = $1`, [username])
+            // const userInfo = await db.manyOrNone(`select * from users where username = $1`, [username])
             const playlist = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1`, [id]);
             res.json({
-                user: userInfo,
+                // user: userInfo,
                 playlist
             })
 
@@ -120,11 +101,11 @@ module.exports = function (db) {
     // /api/new_playlist/:username
     const createPlaylist = async function (req, res) {
         try {
-            const username = req.params.username
+            const {id} = req.params
             const { playlist_name } = req.body
 
 
-            const { id } = await db.oneOrNone(`SELECT id from users WHERE username = $1`, [username]);
+            // const { id } = await db.oneOrNone(`SELECT id from users WHERE username = $1`, [username]);
 
             let checkUser = await db.manyOrNone(`SELECT * from playlists WHERE user_id = $1 and playlist_name = $2`, [id, playlist_name]);
             if (checkUser.length < 1) {
@@ -148,12 +129,12 @@ module.exports = function (db) {
     // /api/playlist_titles/:username/:playlist_name
     const addToPlaylist = async function (req, res) {
         try {
-            const { username } = req.params
-            const { playlist_name } = req.params
-            const { movieId } = req.body
+            const { id, playlist_name, movieId } = req.params
+
+            // const { movieId } = req.body
 
 
-            const { id } = await db.oneOrNone(`SELECT id from users WHERE username = $1`, [username]);
+            // const { id } = await db.oneOrNone(`SELECT id from users WHERE username = $1`, [username]);
             let playlist = await db.one(`select id from playlists where playlist_name = $1 and user_id = $2`, [playlist_name, id])
             const playlistId = playlist.id
             let checkPlaylists = await db.manyOrNone(`SELECT * from playlist_titles WHERE playlist_id = $1 and movie_id = $2`, [playlistId, id]);
@@ -178,10 +159,10 @@ module.exports = function (db) {
     // /api/playlist_titles
     const deleteFromPlaylist = async function (req, res) {
 
-        const { username, movie_id, playlist_name } = req.query
+        const { id, movie_id, playlist_name } = req.query
 
         try {
-            const { id } = await db.one(`select id from users where username = $1`, [username])
+            // const { id } = await db.one(`select id from users where username = $1`, [username])
 
             let playlist = await db.one(`select id from playlists where playlist_name = $1 and user_id = $2`, [playlist_name, id])
             const playlistId = playlist.id
@@ -200,11 +181,10 @@ module.exports = function (db) {
     const deletePlaylist = async function (req, res) {
         try {
 
-            const { username } = req.query
-            const { playlist_name } = req.query
+            const { id, playlist_name } = req.query
 
             try {
-                const { id } = await db.one(`select id from users where username = $1`, [username])
+                // const { id } = await db.one(`select id from users where username = $1`, [username])
                 await db.none(`delete from playlists WHERE user_id = $1 and playlist_name = $2`, [id, playlist_name]);
                 res.json({
                     status: 'success'
@@ -222,6 +202,8 @@ module.exports = function (db) {
     };
 
     return {
+        test,
+        getUser,
         getUserPlaylists,
         checkMoviesInPlaylist,
         getMoviesInPlaylist,
@@ -230,5 +212,5 @@ module.exports = function (db) {
         addToPlaylist,
         deleteFromPlaylist,
         deletePlaylist
-      };
+    };
 }

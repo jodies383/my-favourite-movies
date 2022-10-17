@@ -1,10 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from "react-router";
-
 import UserContext from '../Contexts/UserContext';
 import AxiosInstance from "../Hooks/AxiosInstance";
-
-
 import {
     AppBar,
     Box,
@@ -25,9 +22,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-
 } from '@mui/material';
-
 import { Delete, Bookmarks, Menu, Add, Person } from '@mui/icons-material';
 
 
@@ -39,13 +34,13 @@ export default function Header() {
     const [playlist, setPlaylist] = useState('')
     const [allPlaylists, setAllPlaylists] = useState('')
     const [playlist_name, setPlaylist_Name] = useState('')
-    const { username, focusPlaylist, setFocusPlaylist, setUsername } = useContext(UserContext);
+    const { userId, username, focusPlaylist, setFocusPlaylist, setUsername } = useContext(UserContext);
     const axios = AxiosInstance();
 
     useEffect(() => {
         if (username == undefined) setUsername(localStorage.getItem('username'))
         if (username !== undefined){
-            axios.get(`/api/playlists/${username}`).then((response) => {
+            axios.get(`/api/playlists/${userId}`).then((response) => {
                 const { data } = response
                 setAllPlaylists(data.playlistNames)
 
@@ -65,7 +60,7 @@ export default function Header() {
     };
     const deletePlaylist = () => {
         if (username !== undefined)
-            axios.delete(`/api/playlist?username=${username}&playlist_name=${focusPlaylist}`).then((response) => {
+            axios.delete(`/api/playlist?id=${userId}&playlist_name=${focusPlaylist}`).then((response) => {
                 handleClose()
                 navigate("/my-favourite-movies/Home");
             })
@@ -73,9 +68,9 @@ export default function Header() {
 
     const createNewPlaylist = () => {
         if (username !== undefined)
-            axios.post(`/api/new_playlist/${username}`, { playlist_name }).then((response) => {
+            axios.post(`/api/new_playlist/${userId}`, { playlist_name }).then((response) => {
                 console.log(response)
-                axios.get(`/api/playlists/${username}`).then((response) => {
+                axios.get(`/api/playlists/${userId}`).then((response) => {
                     const { data } = response
                     console.log(data)
                     setAllPlaylists(data.playlist)
@@ -90,7 +85,7 @@ export default function Header() {
 
     useEffect(() => {
         if (username !== undefined)
-            axios.get(`/api/all_playlist_titles/${username}`).then((response) => {
+            axios.get(`/api/all_playlist_titles/${userId}`).then((response) => {
                 const { data } = response
 
                 setPlaylist(data.playlist)

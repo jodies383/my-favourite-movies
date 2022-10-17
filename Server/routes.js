@@ -6,6 +6,9 @@ module.exports = function (app, db) {
   const auth = Auth(db);
 
   //User Routes
+  app.get('/api/test', users.test);
+  app.get('/api/user', users.getUser);
+
   app.post('/api/register', auth.registerUser);
   app.post('/api/login', auth.loginUser);
  

@@ -24,9 +24,7 @@ export default function AddToFavsModal() {
     const navigate = useNavigate();
     const [playlist, setPlaylist] = useState('');
     const [playlist_name, setPlaylist_Name] = useState('');
-
     const { username, movieId, setMovieId, userId, setUsername, playlistNames, setPlaylistNames } = useContext(UserContext);
-
     const [user, setUser] = useState('');
     const axios = AxiosInstance();
     const handleOpen = () => setOpen(true);
@@ -38,7 +36,7 @@ export default function AddToFavsModal() {
     useEffect(() => {
         if (username == undefined) setUsername(localStorage.getItem('username'))
         if (username !== undefined)
-            axios.get(`/api/playlists/${username}`).then(async (response) => {
+            axios.get(`/api/playlists/${userId}`).then(async (response) => {
                 const { data } = response
 
                 let playlistData = data.playlist
@@ -69,7 +67,7 @@ export default function AddToFavsModal() {
 
     const createNewPlaylist = () => {
         if (username !== undefined)
-            axios.post(`/api/new_playlist/${username}`, { playlist_name }).then((response) => {
+            axios.post(`/api/new_playlist/${userId}`, { playlist_name }).then((response) => {
 
                 axios.get(`/api/playlists/${username}`).then((response) => {
                     const { data } = response
@@ -83,7 +81,7 @@ export default function AddToFavsModal() {
     const removeFromFavourites = (playlist) => {
         if (username !== undefined)
             axios
-                .delete(`/api/playlist_titles?username=${username}&movie_id=${movieId}&playlist_name=${playlist}`)
+                .delete(`/api/playlist_titles?id=${userId}&movie_id=${movieId}&playlist_name=${playlist}`)
                 .then((result) => {
                     console.log(result.data.status)
                 });
@@ -99,9 +97,9 @@ export default function AddToFavsModal() {
 
     const addToFavourites = async (playlist_name) => {
         if (username !== undefined)
-            axios.post(`/api/playlist_titles/${username}/${playlist_name}`, { movieId: movieId }).then((result) => {
+            axios.post(`/api/playlist_titles/${userId}/${playlist_name}/${movieId}`).then((result) => {
                 if (result.data.message == 'success') {
-                    axios.get(`/api/playlist/${username}`).then(async (result) => {
+                    axios.get(`/api/playlist/${userId}`).then(async (result) => {
                         setUser(result.data.user)
                         let res = result.data.playlist
                         const movies = res.map(async element => {

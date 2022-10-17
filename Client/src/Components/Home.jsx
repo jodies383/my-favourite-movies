@@ -17,7 +17,7 @@ import AxiosInstance from "../Hooks/AxiosInstance";
 export default function Home() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const [post, setPost] = useState(null);
+  const [movies, setMovies] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [movieResults, setMovieResults] = useState('');
   const { username, setUsername, movieId, setMovieId, playlist, setPlaylist } = useContext(UserContext);
@@ -32,7 +32,7 @@ export default function Home() {
   useEffect(() => {
     axios.get(baseURL).then((response) => {
       const { results } = response.data
-      setPost(results);
+      setMovies(results);
       setMovieResults(`Trending movies`)
     });
   }, []);
@@ -45,13 +45,13 @@ export default function Home() {
           console.log('no movies found')
         } else {
           setMovieResults(`${results.length} movies found`)
-          setPost(results)
+          setMovies(results)
         }
       })
     } else {
       axios.get(baseURL).then((response) => {
         const { results } = response.data
-        setPost(results);
+        setMovies(results);
         setMovieResults(`Trending movies`)
       });
     }
@@ -66,7 +66,7 @@ export default function Home() {
     return
   }
 
-  if (!post) return null;
+  if (!movies) return null;
 
   return (
     <div className="App">
@@ -99,7 +99,7 @@ export default function Home() {
 
       <h2 style={{ textAlign: 'center' }}>{movieResults}</h2>
       <Box className='movieCard' >
-        {post.map((res, index) => <Box key={index}  className='movieCardItems'>
+        {movies.map((res, index) => <Box key={index}  className='movieCardItems'>
           
           <Box>
             <img className='moviePoster' src={`https://image.tmdb.org/t/p/original/${res.poster_path}`} width='100%' />
