@@ -8,7 +8,7 @@ module.exports = function (db) {
         try {
             const { username } = req.params
             const user = await db.one(`SELECT * from users WHERE username = $1`, [username])
-            res.json(user)
+            res.json({user})
         } catch (err) {
             console.log(err);
         }
