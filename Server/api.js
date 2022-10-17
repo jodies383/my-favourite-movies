@@ -1,8 +1,4 @@
-module.exports = function (app, db) {
-    const jwt = require('jsonwebtoken')
-    const bcrypt = require('bcrypt');
-    const saltRounds = 10;
-
+module.exports = function (db) {
     // app.get('/api/test', function (req, res) {
     //     res.json({
     //         name: 'joe'

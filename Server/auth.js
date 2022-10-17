@@ -1,4 +1,4 @@
-module.exports = function (app, db) {
+module.exports = function (db) {
 
 
 const verifyToken = function (req, res, next) {
