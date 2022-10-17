@@ -3,11 +3,11 @@ module.exports = function (app, db) {
     const bcrypt = require('bcrypt');
     const saltRounds = 10;
 
-    app.get('/api/test', function (req, res) {
-        res.json({
-            name: 'joe'
-        });
-    });
+    // app.get('/api/test', function (req, res) {
+    //     res.json({
+    //         name: 'joe'
+    //     });
+    // });
 
     //returns a users info, playlists & playlist names - separate user info
     /// api/playlists/:username
