@@ -34,8 +34,8 @@ export default function AddToFavsModal() {
     const ref = useRef(null);
 
     useEffect(() => {
-        if (username == undefined) setUsername(localStorage.getItem('username'))
-        if (username !== undefined)
+       
+        if (userId !== undefined)
             axios.get(`/api/playlists/${userId}`).then(async (response) => {
                 const { data } = response
 
@@ -66,7 +66,7 @@ export default function AddToFavsModal() {
     }, [movieDetails]);
 
     const createNewPlaylist = () => {
-        if (username !== undefined)
+        if (userId !== undefined)
             axios.post(`/api/new_playlist/${userId}`, { playlist_name }).then((response) => {
 
                 axios.get(`/api/playlists/${username}`).then((response) => {
@@ -79,7 +79,7 @@ export default function AddToFavsModal() {
 
 
     const removeFromFavourites = (playlist) => {
-        if (username !== undefined)
+        if (userId !== undefined)
             axios
                 .delete(`/api/playlist_titles?id=${userId}&movie_id=${movieId}&playlist_name=${playlist}`)
                 .then((result) => {

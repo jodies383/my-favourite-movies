@@ -38,8 +38,8 @@ export default function Header() {
     const axios = AxiosInstance();
 
     useEffect(() => {
-        if (username == undefined) setUsername(localStorage.getItem('username'))
-        if (username !== undefined){
+        
+        if (userId !== undefined){
             axios.get(`/api/playlists/${userId}`).then((response) => {
                 const { data } = response
                 setAllPlaylists(data.playlistNames)
@@ -59,7 +59,7 @@ export default function Header() {
         setOpenDialog(false);
     };
     const deletePlaylist = () => {
-        if (username !== undefined)
+        if (userId !== undefined)
             axios.delete(`/api/playlist?id=${userId}&playlist_name=${focusPlaylist}`).then((response) => {
                 handleClose()
                 navigate("/my-favourite-movies/Home");
@@ -67,7 +67,7 @@ export default function Header() {
     }
 
     const createNewPlaylist = () => {
-        if (username !== undefined)
+        if (userId !== undefined)
             axios.post(`/api/new_playlist/${userId}`, { playlist_name }).then((response) => {
                 console.log(response)
                 axios.get(`/api/playlists/${userId}`).then((response) => {

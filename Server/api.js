@@ -43,9 +43,9 @@ module.exports = function (db) {
     // /api/in_playlist
     const checkMoviesInPlaylist = async function (req, res) {
         try {
-            const { user_id, movie_id } = req.query
+            const { id, movie_id } = req.query
 
-            const movieInfo = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1 AND movie_id = $2`, [user_id, movie_id])
+            const movieInfo = await db.manyOrNone(`SELECT * from playlist_titles JOIN playlists on playlist_titles.playlist_id=playlists.id where user_id = $1 AND movie_id = $2`, [id, movie_id])
 
             res.json({ movieInfo })
 
