@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from "react-router";
 import Header from './Header';
 import UserContext from '../Contexts/UserContext';
@@ -9,7 +9,7 @@ import {
   CircularProgress,
   Snackbar
 } from '@mui/material';
-import { BookmarkRemove } from '@mui/icons-material';
+import { BookmarkRemove, Close } from '@mui/icons-material';
 import AxiosInstance from "../Hooks/AxiosInstance";
 
 export default function Favourites() {
@@ -30,37 +30,61 @@ export default function Favourites() {
     }
     setOpen(false);
   };
-
+  const getMoviesInPlaylist = () => {
+    if (userId !== undefined)
+      axios.get(`/api/playlist_titles/${userId}/${focusPlaylist}`).then(async response => {
+        const { data } = response
+        let res = data.playlist
+        const movies = res.map(async element => {
+          try {
+            const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
+            return result.data;
+          } catch (e) {
+            return console.log(e);
+          }
+        });
+        setPlaylist(await Promise.all(movies))
+      }).catch(e => console.log(e))
+  }
   useEffect(() => {
-    axios.get(`/api/playlist_titles/${userId}/${focusPlaylist}`).then(async response => {
-      const { data } = response
-      let res = data.playlist
-      const movies = res.map(async element => {
-        try {
-          const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
-          console.log(result.data);
-          return result.data;
-        } catch (e) {
-          return console.log(e);
-        }
-      });
-      setPlaylist(await Promise.all(movies))
-
-    }).catch(e => console.log(e))
-  }, [username, focusPlaylist]);
+    getMoviesInPlaylist()
+  }, [username, focusPlaylist, userId, playlist]);
 
   const removeMovie = (movie) => {
     axios
-      .delete(`/api/playlist?username=${userId}&movie_id=${movie}`)
+      .delete(`/api/playlist_titles?id=${userId}&movie_id=${movie}&playlist_name=${focusPlaylist}`)
       .then((result) => {
+        getMoviesInPlaylist()
         openSnackbar()
       });
   }
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <Close fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
+
   return (
     <div className="App">
       <Header />
       <Button variant="contained" sx={{ m: 1 }} onClick={() => navigate('/my-favourite-movies/Home')}>Back to Movies</Button>
 
+        <h2 style={{ textAlign: 'center',fontSize: '44px' }}>{focusPlaylist}</h2>
+  
       <Box className='circularProgress'>
         {!playlist ? <CircularProgress /> : playlist.length > 0 ? <h2 style={{ textAlign: 'center' }}>Your favourites</h2> : <h2 style={{ textAlign: 'center' }}>You have no favourites yet...</h2>}
       </Box>

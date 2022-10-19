@@ -20,26 +20,27 @@ export default function Home() {
   const [movies, setMovies] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [movieResults, setMovieResults] = useState('');
-  const { username, setUsername, movieId, setMovieId, playlist, setPlaylist } = useContext(UserContext);
+  const { userId, username, setUsername, movieId, setMovieId, playlist, setPlaylist } = useContext(UserContext);
   const [user, setUser] = useState('');
   const axios = AxiosInstance();
-
-  const baseURL = "https://api.themoviedb.org/3/movie/popular?api_key=511ebf4540231b1f06e7bec72f6b4a05&language=en-US&page=1";
+  const api = import.meta.env.VITE_API_KEY
+  const movie_db_url = `https://api.themoviedb.org/3/movie/popular?api_key=${api}&language=en-US&page=1`;
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   useEffect(() => {
-    axios.get(baseURL).then((response) => {
+    if (username == undefined) setUsername(localStorage.getItem('username'))
+    axios.get(movie_db_url).then((response) => {
       const { results } = response.data
       setMovies(results);
       setMovieResults(`Trending movies`)
     });
-  }, []);
+  }, [username]);
   
   const searchMovies = async () => {
     if (searchInput) {
-      await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=511ebf4540231b1f06e7bec72f6b4a05&query=${searchInput}`).then((result) => {
+      await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${api}&query=${searchInput}`).then((result) => {
         const results = result.data.results
         if (results.length < 1) {
           console.log('no movies found')
@@ -49,7 +50,7 @@ export default function Home() {
         }
       })
     } else {
-      axios.get(baseURL).then((response) => {
+      axios.get(movie_db_url).then((response) => {
         const { results } = response.data
         setMovies(results);
         setMovieResults(`Trending movies`)

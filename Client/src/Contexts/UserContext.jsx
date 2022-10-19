@@ -10,26 +10,36 @@ export const UserProvider = ({ children }) => {
   const [username, setUsername] = useState();
   const [userId, setUserId] = useState();
   const [movieId, setMovieId] = useState();
+  const [user, setUser] = useState();
   const [userData, setUserData] = useState();
   const [playlist, setPlaylist] = useState();
   const [playlistNames, setPlaylistNames] = useState();
 
   useEffect(() => {
-    // if (username !== undefined)
+    if (username == undefined)
+    setUsername('harryP')
+    //console.log(username)
+  }, [username])
+
+  useEffect(() => {
+    //if (username !== undefined)
+    if (username == undefined) setUsername(localStorage.getItem('username'))
+   
     const getUserId = () => {
       axios.get(`/api/user/${username}`).then(async (res) => {
         const { data } = res
         setUserId(data.user.id)
+        setUser(data.user)
         setUserData(data)
       })
     }
-    if (username !== undefined && (userId == 0 || !userId)) {
+    if (userId == undefined && username !== undefined) {
       getUserId();
     }
-  }, [username, userId])
+  }, [username, userId, user])
 
   useEffect(() => {
-    // if (username == undefined) setUsername(localStorage.getItem('username'))
+    if (username == undefined) setUsername(localStorage.getItem('username'))
     if (userId !== undefined)
       axios.get(`/api/all_playlist_titles/${userId}`).then(async (response) => {
         const { data } = response
@@ -48,23 +58,23 @@ export const UserProvider = ({ children }) => {
         playlistData = await Promise.all(movies)
         setPlaylist(playlistData)
       });
-  }, [username]);
+  }, [username, userId]);
 
   useEffect(() => {
-    // if (username == undefined) setUsername(localStorage.getItem('username'))
+   if (username == undefined) setUsername(localStorage.getItem('username'))
     if (userId !== undefined)
       axios.get(`/api/playlists/${userId}`).then((response) => {
         const { data } = response
         setPlaylistNames(data.playlistNames)
       })
-  }, [username]);
+  }, [username, userId]);
 
 
   return (
     <UserContext.Provider
       value={{
         focusPlaylist, setFocusPlaylist, username, setUsername,
-        userId, setUserId, movieId, setMovieId, userData, setUserData,
+        userId, setUserId, movieId, setMovieId, user, setUser, userData, setUserData,
         playlist, setPlaylist, playlistNames, setPlaylistNames
       }}
     >

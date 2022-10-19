@@ -22,6 +22,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+   
 } from '@mui/material';
 import { Delete, Bookmarks, Menu, Add, Person } from '@mui/icons-material';
 
@@ -30,22 +31,23 @@ export default function Header() {
     const [open, setOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const navigate = useNavigate();
-    const [user, setUser] = useState('')
     const [playlist, setPlaylist] = useState('')
     const [allPlaylists, setAllPlaylists] = useState('')
     const [playlist_name, setPlaylist_Name] = useState('')
-    const { userId, username, focusPlaylist, setFocusPlaylist, setUsername } = useContext(UserContext);
+    
+    const { userId, username, focusPlaylist, setFocusPlaylist, setUsername, user, setUser } = useContext(UserContext);
     const axios = AxiosInstance();
 
     useEffect(() => {
-        
-        if (userId !== undefined){
+
+        if (userId !== undefined) {
             axios.get(`/api/playlists/${userId}`).then((response) => {
                 const { data } = response
                 setAllPlaylists(data.playlistNames)
 
-            })}
-    }, [username, focusPlaylist, allPlaylists]);
+            })
+        }
+    }, [username, focusPlaylist, allPlaylists, user]);
 
     const handleLogout = () => {
         localStorage.clear()
@@ -60,7 +62,7 @@ export default function Header() {
     };
     const deletePlaylist = () => {
         if (userId !== undefined)
-            axios.delete(`/api/playlist?id=${userId}&playlist_name=${focusPlaylist}`).then((response) => {
+            axios.delete(`/api/playlist?id=${userId}&playlist_name=${focusPlaylist}`).then(() => {
                 handleClose()
                 navigate("/my-favourite-movies/Home");
             })
@@ -84,17 +86,13 @@ export default function Header() {
     };
 
     useEffect(() => {
-        if (username !== undefined)
+        if (userId !== undefined)
             axios.get(`/api/all_playlist_titles/${userId}`).then((response) => {
                 const { data } = response
-
                 setPlaylist(data.playlist)
-                setUser(data.user)
-                //console.log(results)
-
             });
     }, []);
-
+    
     return (
         <div className="App">
             <Box sx={{ flexGrow: 1, }}>
@@ -120,14 +118,11 @@ export default function Header() {
 
             <Drawer open={open} anchor={"left"} onClose={() => setOpen(false)} style={{ textAlign: 'center', margin: 5 }}>
                 <Box sx={{ backgroundColor: '#2c3440', color: 'white' }}>
-
-                    {user ? user.map((res, index) =>
-                        <h2 key={index}><Person /> {res.first_name} {res.last_name}</h2>
-                    ) : null}
+                    {user && <h2><Person /> {user.first_name} {user.last_name}</h2>}
                 </Box>
                 <FormControl variant="standard" style={{ margin: 10 }}>
                     <InputLabel htmlFor="input-with-icon-adornment">
-                        Create new playlist
+                        Create a new playlist
                     </InputLabel>
                     <Input
                         id="input-with-icon-adornment"
@@ -179,3 +174,5 @@ export default function Header() {
         </div>
     )
 }
+
+

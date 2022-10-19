@@ -5,6 +5,7 @@ module.exports = function (db) {
 
 const verifyToken = function (req, res, next) {
     const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
+    const user = req.headers['user'];
     if (!req.headers.authorization || !token) {
         res.sendStatus(401);
         return;
@@ -13,7 +14,7 @@ const verifyToken = function (req, res, next) {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const { username } = decoded;
         //check if username matches logged in user
-        if (username) {
+        if (username == user) {
             next();
         } else {
             res.status(403).json({
@@ -56,11 +57,11 @@ const registerUser = async function (req, res) {
         console.log(err);
     }
 }
-//login a user
+
 const loginUser = async function (req, res) {
     try {
-        const { username } = req.body;
-        const { password } = req.body;
+        const { username, password } = req.body;
+
         const token = jwt.sign({
             username
         }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '4hr' });
