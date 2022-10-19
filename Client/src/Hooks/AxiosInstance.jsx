@@ -10,6 +10,7 @@ function AxiosInstance() {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
       user: localStorage.getItem('username'),
+      
       'Content-Type': 'application/json'
     },
     // withCredentials: true
