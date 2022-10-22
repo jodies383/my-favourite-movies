@@ -9,7 +9,8 @@ function AxiosInstance() {
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
-      uid: 'harryP'
+      user: 'harryP',
+      'Content-Type': 'application/json'
     },
     // withCredentials: true
   });

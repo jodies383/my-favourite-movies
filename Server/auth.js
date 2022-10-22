@@ -5,7 +5,7 @@ module.exports = function (db) {
 
 const verifyToken = function (req, res, next) {
     const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
-    const user = req.headers['uid'];
+    const user = req.headers['user'];
     if (!req.headers.authorization || !token) {
         res.sendStatus(401);
         return;
