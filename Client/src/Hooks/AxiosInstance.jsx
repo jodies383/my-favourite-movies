@@ -9,7 +9,6 @@ function AxiosInstance() {
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
-      user: 'harryP',
       'Content-Type': 'application/json'
     },
     // withCredentials: true
