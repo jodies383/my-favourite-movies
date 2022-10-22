@@ -14,7 +14,7 @@ const verifyToken = function (req, res, next) {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const { username } = decoded;
      
-        if (username == user) {
+        if (username) {
             next();
         } else {
             res.status(403).json({
