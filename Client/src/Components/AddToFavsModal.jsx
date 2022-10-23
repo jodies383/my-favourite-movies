@@ -164,6 +164,7 @@ export default function AddToFavsModal() {
                     />
                 </FormControl>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }} component={'span'} variant={'body2'}>
+                    <h2>Add to playlist</h2>
                     {Array.isArray(playlistNames) ? playlistNames.map((res, index) =>
                         <ListItem key={index}>
                             {checkPlaylist(res.playlist_name) == true ?

@@ -14,7 +14,6 @@ import {
 import { Search, BookmarkAdd, BookmarkRemove } from '@mui/icons-material';
 import AxiosInstance from "../Hooks/AxiosInstance";
 
-// import axios from 'axios';
 export default function Home() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -38,7 +37,7 @@ export default function Home() {
       setMovieResults(`Trending movies`)
     });
   }, [username]);
-
+  
   const searchMovies = async () => {
     if (searchInput) {
       await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${api}&query=${searchInput}`).then((result) => {
@@ -58,10 +57,14 @@ export default function Home() {
       });
     }
   }
-
+  
   const bookmark = (id) => {
-    const result = playlist.some(movie => movie.id == id)
-    return result
+    let movieIdList = []
+    playlist ? playlist.map((el) => movieIdList.push(el.id)) : null
+    if (movieIdList.includes(id)) {
+      return true
+    }
+    return
   }
 
   if (!movies) return null;
@@ -91,14 +94,14 @@ export default function Home() {
         aria-describedby="modal-modal-description"
       >
         <div>
-          <AddToFavsModal />
+        <AddToFavsModal />
         </div>
       </Modal>
 
       <h2 style={{ textAlign: 'center' }}>{movieResults}</h2>
       <Box className='movieCard' >
-        {movies.map((res, index) => <Box key={index} className='movieCardItems'>
-
+        {movies.map((res, index) => <Box key={index}  className='movieCardItems'>
+          
           <Box>
             <img className='moviePoster' src={`https://image.tmdb.org/t/p/original/${res.poster_path}`} width='100%' />
             <br />
