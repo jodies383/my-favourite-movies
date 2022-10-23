@@ -10,7 +10,7 @@ before_script:
   - cd Server
   - npm install mocha
   - psql -c 'create database movie_api;' -U postgres
-  - psql -U postgres -d movie_api -a -f ./sql/movie-api.sql
+  - psql -U postgres -d movie_api -a -f ./SQL/movie-api.sql
 
 services:
   - postgresql
