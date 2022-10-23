@@ -1,0 +1,17 @@
+
+language: node_js
+
+env:
+  - DATABASE_URL=postgres://postgres@localhost:5432/movie_api
+
+node_js:  
+  - 12
+
+before_script:
+  - cd Server
+  - npm install mocha
+  - psql -c 'create database movie_api;' -U postgres
+  - psql -U postgres -d movie_api -a -f ./sql/movie-api.sql
+
+services:
+  - postgresql

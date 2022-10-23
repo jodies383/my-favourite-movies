@@ -32,7 +32,7 @@ const verifyToken = function (req, res, next) {
 
 }
 
-//register a user
+
 const registerUser = async function (req, res) {
     try {
         const { username, password, firstName, lastName } = req.body;

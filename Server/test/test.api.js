@@ -23,8 +23,8 @@ describe('The Movie API', function () {
     before(async function () {
         this.timeout(5000);
         // await db.none(`delete from users`);
-        // await db.none(`delete from playlists`);
-        // await db.none(`delete from playlist_titles`);
+        await db.none(`delete from playlists`);
+        await db.none(`delete from playlist_titles`);
 
     });
     let token
@@ -36,7 +36,7 @@ describe('The Movie API', function () {
             .get('/api/test')
             .expect(200);
 
-        assert.deepStrictEqual({ name: 'joe' }, response.body);
+        assert.deepStrictEqual({ name: 'Joe' }, response.body);
 
     });
 
@@ -56,7 +56,7 @@ describe('The Movie API', function () {
 
     })
 
-    it('shouldnt be able to register the same user', async () => {
+    it('should not be able to register the same user', async () => {
         const response = await supertest(app)
             .post('/api/register')
             .send({
@@ -111,35 +111,32 @@ describe('The Movie API', function () {
     it('should be able to create a new playlist for a user', async () => {
 
         const response = await supertest(app)
-            .post('/api/new_playlist/JoeSmith01')
+            .post('/api/new_playlist/1')
             .set({ "Authorization": `Bearer ${token}` })
             .send({ playlist_name: 'Action' })
             .expect(200);
 
 
-        const { message } = response.body;
-        assert.equal('success', message);
-
+        const { status } = response;
+        assert.equal(200, status);
     });
 
     it('should be able to add a movie to a specific playlist', async () => {
 
         const response = await supertest(app)
-            .post('/api/playlist_titles/JoeSmith01/Action')
+            .post('/api/playlist_titles/1/Action/4765')
             .set({ "Authorization": `Bearer ${token}` })
-            .send({ movieId: '4765' })
             .expect(200);
 
 
-        const { message } = response.body;
-        assert.equal('success', message);
-
+        const { status } = response;
+        assert.equal(200, status);
     });
 
     it('should be able to view playlists for a user', async () => {
 
         const response = await supertest(app)
-            .get('/api/playlists/JoeSmith01')
+            .get('/api/playlists/1')
             .set({ "Authorization": `Bearer ${token}` })
             .expect(200);
 
@@ -152,7 +149,7 @@ describe('The Movie API', function () {
     it('should be able to view movies for a specific playlist', async () => {
 
         const response = await supertest(app)
-            .get('/api/playlist_titles/JoeSmith01/Action')
+            .get('/api/playlist_titles/1/Action')
             .set({ "Authorization": `Bearer ${token}` })
             .expect(200);
 
@@ -166,7 +163,7 @@ describe('The Movie API', function () {
 
 
         const response = await supertest(app)
-            .get('/api/all_playlist_titles/JoeSmith01')
+            .get('/api/all_playlist_titles/1')
             .set({ "Authorization": `Bearer ${token}` })
             .expect(200);
         const playlist = response.body.playlist
@@ -174,27 +171,28 @@ describe('The Movie API', function () {
     });
 
 
-    it('you should be able to remove a movie from a specific playlist', async () => {
+    it('user should be able to remove a movie from a specific playlist', async () => {
 
         const response = await supertest(app)
-            .delete(`/api/playlist_titles?username=JoeSmith01&movie_id=4765`)
+            .delete(`/api/playlist_titles?id=1&movie_id=4765&playlist_name=Action`)
             .set({ "Authorization": `Bearer ${token}` })
-            .send({ playlist_name: 'Action' })
             .expect(200);
 
 
-        assert.equal('success', response.body.status);
+        const { status } = response;
+        assert.equal(200, status);
     });
 
-    it('you should be able to delete a playlist', async () => {
+    it('user should be able to delete a playlist', async () => {
 
         const response = await supertest(app)
-            .delete(`/api/playlist?username=JoeSmith01&playlist_name=Action`)
+            .delete(`/api/playlist?username=1&playlist_name=Action`)
             .set({ "Authorization": `Bearer ${token}` })
             .expect(200);
 
 
-        assert.equal('success', response.body.status);
+        const { status } = response;
+        assert.equal(200, status);
     });
 
     after(() => {
