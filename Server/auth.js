@@ -64,7 +64,7 @@ const loginUser = async function (req, res) {
 
         const token = jwt.sign({
             username
-        }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '48hr' });
+        }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '2m' });
         let checkUser = await db.manyOrNone(`SELECT id from users WHERE username = $1`, [username]);
         if (checkUser.length < 1) {
             res.json({

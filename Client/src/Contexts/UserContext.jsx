@@ -14,15 +14,14 @@ export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState();
   const [playlist, setPlaylist] = useState();
   const [playlistNames, setPlaylistNames] = useState();
+  const api_key = import.meta.env.VITE_API_KEY
 
   useEffect(() => {
     if (username == undefined)
     setUsername('harryP')
-    //console.log(username)
   }, [username])
 
   useEffect(() => {
-    //if (username !== undefined)
     if (username == undefined) setUsername(localStorage.getItem('username'))
    
     const getUserId = () => {
@@ -48,8 +47,7 @@ export const UserProvider = ({ children }) => {
         const movies = playlistData.map(async element => {
           try {
             const result = await axios
-              .get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
-            console.log(result.data);
+              .get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=${api_key}`);
             return result.data;
           } catch (e) {
             return console.log(e);

@@ -31,19 +31,22 @@ export default function Header() {
     const [open, setOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const navigate = useNavigate();
-    const [playlist, setPlaylist] = useState('')
-    const [allPlaylists, setAllPlaylists] = useState('')
-    const [playlist_name, setPlaylist_Name] = useState('')
+    const [playlist, setPlaylist] = useState('');
+    const [allPlaylists, setAllPlaylists] = useState('');
+    const [playlist_name, setPlaylist_Name] = useState('');
     
     const { userId, username, focusPlaylist, setFocusPlaylist, setUsername, user, setUser } = useContext(UserContext);
     const axios = AxiosInstance();
 
     useEffect(() => {
-
         if (userId !== undefined) {
             axios.get(`/api/playlists/${userId}`).then((response) => {
                 const { data } = response
-                setAllPlaylists(data.playlistNames)
+                if (data.message == 'expired'){
+                    handleLogout()
+                } else {
+                    setAllPlaylists(data.playlistNames)
+                }
 
             })
         }
