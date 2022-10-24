@@ -23,7 +23,9 @@ import {
     DialogContentText,
     DialogTitle
 } from '@mui/material';
-import { Delete, Bookmarks, Menu, Add, Person } from '@mui/icons-material';
+import { Delete, Bookmarks, Menu, Add, Person2 } from '@mui/icons-material';
+import Popcorn from './Icons/Popcorn';
+
 
 export default function Header() {
     const navigate = useNavigate();
@@ -60,17 +62,17 @@ export default function Header() {
     const handleClose = () => {
         setOpenDialog(false);
     };
-    const deletePlaylist = () => {
+    const deletePlaylist = async() => {
         if (userId !== undefined)
-            axios.delete(`/api/playlist?id=${userId}&playlist_name=${focusPlaylist}`).then(() => {
+           await axios.delete(`/api/playlist?id=${userId}&playlist_name=${focusPlaylist}`).then(() => {
                 handleClose()
                 navigate("/my-favourite-movies/Home");
             })
     }
 
-    const createNewPlaylist = () => {
+    const createNewPlaylist = async() => {
         if (userId !== undefined)
-            axios.post(`/api/new_playlist/${userId}`, { playlist_name }).then((response) => {
+           await axios.post(`/api/new_playlist/${userId}`, { playlist_name }).then((response) => {
                 console.log(response)
                 axios.get(`/api/playlists/${userId}`).then((response) => {
                     const { data } = response
@@ -99,13 +101,14 @@ export default function Header() {
                             edge="start"
                             color="inherit"
                             aria-label="menu"
-                            sx={{ mr: 2 }}
+                            sx={{ mr: 2, display: 'flex', flexDirection: 'column' }}
                             onClick={() => setOpen(true)}
                         >
+                            <Popcorn style={{ height: 45, width: 56 }} />
                             <Menu />
                         </IconButton>
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            <h2>🍿 my favourite movies</h2>
+                        <h2>my favourite movies</h2>
                         </Typography>
                         <Button color="inherit" onClick={handleLogout}>Logout</Button>
                     </Toolbar>
@@ -114,7 +117,7 @@ export default function Header() {
 
             <Drawer open={open} anchor={"left"} onClose={() => setOpen(false)} style={{ textAlign: 'center', margin: 5 }}>
                 <Box sx={{ backgroundColor: '#2c3440', color: 'white' }}>
-                    {user && <h2><Person /> {user.first_name} {user.last_name}</h2>}
+                    {user && <h2><Person2 style={{ height: 25, width: 28 }}/> {user.first_name} {user.last_name}</h2>}
                 </Box>
                 <FormControl variant="standard" style={{ margin: 10 }}>
                     <InputLabel htmlFor="input-with-icon-adornment">

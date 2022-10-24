@@ -14,11 +14,57 @@ import AxiosInstance from "../Hooks/AxiosInstance";
 
 export default function Favourites() {
   const navigate = useNavigate();
-  const [playlist, setPlaylist] = useState('');
-  const { username, setUsername, focusPlaylist, userId } = useContext(UserContext);
+  const [favourites, setFavourites] = useState('');
+  const { username, setUsername, focusPlaylist, userId, playlist, setPlaylist } = useContext(UserContext);
   const [open, setOpen] = useState(false);
   const axios = AxiosInstance();
 
+  const getPlaylistData = async () => {
+    if (userId !== undefined)
+      await axios.get(`/api/playlists/${userId}`).then(async (response) => {
+        const { data } = response
+
+        let playlistData = data.playlist
+        const movies = playlistData.map(async element => {
+          try {
+            const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
+            return result.data;
+          } catch (e) {
+            return console.log(e);
+          }
+        });
+        playlistData = await Promise.all(movies)
+        setPlaylist(playlistData)
+      });
+  }
+  const getMoviesInPlaylist = async () => {
+    if (userId !== undefined)
+      await axios.get(`/api/playlist_titles/${userId}/${focusPlaylist}`).then(async response => {
+        const { data } = response
+        let res = data.playlist
+        const movies = res.map(async element => {
+          try {
+            const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
+            return result.data;
+          } catch (e) {
+            return console.log(e);
+          }
+        });
+        setFavourites(await Promise.all(movies))
+      }).catch(e => console.log(e))
+  }
+  const removeMovie = async (movie) => {
+    await axios
+      .delete(`/api/playlist_titles?id=${userId}&movie_id=${movie}&playlist_name=${focusPlaylist}`)
+      .then((result) => {
+        getMoviesInPlaylist()
+        getPlaylistData()
+        openSnackbar()
+      });
+  }
+  useEffect(() => {
+    getPlaylistData
+  }, [username, playlist]);
 
   const openSnackbar = () => {
     setOpen(true);
@@ -30,34 +76,12 @@ export default function Favourites() {
     }
     setOpen(false);
   };
-  const getMoviesInPlaylist = () => {
-    if (userId !== undefined)
-      axios.get(`/api/playlist_titles/${userId}/${focusPlaylist}`).then(async response => {
-        const { data } = response
-        let res = data.playlist
-        const movies = res.map(async element => {
-          try {
-            const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
-            return result.data;
-          } catch (e) {
-            return console.log(e);
-          }
-        });
-        setPlaylist(await Promise.all(movies))
-      }).catch(e => console.log(e))
-  }
+
   useEffect(() => {
     getMoviesInPlaylist()
-  }, [username, focusPlaylist, userId, playlist]);
+  }, [username, focusPlaylist, userId, favourites]);
 
-  const removeMovie = (movie) => {
-    axios
-      .delete(`/api/playlist_titles?id=${userId}&movie_id=${movie}&playlist_name=${focusPlaylist}`)
-      .then((result) => {
-        getMoviesInPlaylist()
-        openSnackbar()
-      });
-  }
+
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -82,15 +106,12 @@ export default function Favourites() {
     <div className="App">
       <Header />
       <Button variant="contained" sx={{ m: 1 }} onClick={() => navigate('/my-favourite-movies/Home')}>Back to Movies</Button>
-
-        <h2 style={{ textAlign: 'center',fontSize: '44px' }}>{focusPlaylist}</h2>
-  
+      <h2 style={{ textAlign: 'center', fontSize: '44px' }}>{focusPlaylist}</h2>
       <Box className='circularProgress'>
-        {!playlist ? <CircularProgress /> : playlist.length > 0 ? <h2 style={{ textAlign: 'center' }}>Your favourites</h2> : <h2 style={{ textAlign: 'center' }}>You have no favourites yet...</h2>}
+        {!favourites ? <CircularProgress /> : favourites.length > 0 ? <h2>Your favourites in this playlist</h2> : <h2 style={{ textAlign: 'center' }}>You have no favourites here yet...</h2>}
       </Box>
-
       <Box className='movieCard'>
-        {playlist ? playlist.map((res, index) => <Box key={index} className='movieCardItems'>
+        {favourites ? favourites.map((res, index) => <Box key={index} className='movieCardItems'>
 
           <Box>
             <img className='moviePoster' src={`https://image.tmdb.org/t/p/original/${res.poster_path}`} width='100%' />
@@ -108,13 +129,12 @@ export default function Favourites() {
         </Box>
         ) : null
         }
-
       </Box>
       <Snackbar
         open={open}
         autoHideDuration={5000}
         onClose={closeSnackbar}
-        message={'removed from favourites'}
+        message={'removed from playlist'}
         action={action}
       />
     </div>

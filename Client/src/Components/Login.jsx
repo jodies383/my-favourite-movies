@@ -1,4 +1,4 @@
-import React,{ useState, useEffect, useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import { useNavigate } from "react-router";
 import UserContext from '../Contexts/UserContext';
 import AxiosInstance from "../Hooks/AxiosInstance";
@@ -17,20 +17,21 @@ import {
     Snackbar,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
+import Popcorn from './Icons/Popcorn';
 
 function Login() {
     const navigate = useNavigate();
-    const { username, setUsername } = useContext(UserContext);
+    const { setUsername } = useContext(UserContext);
     const axios = AxiosInstance();
     const [open, setOpen] = useState(false);
-    const [message, setMessage] = useState('')
+    const [message, setMessage] = useState('');
     const [values, setValues] = useState({
         username: '',
         password: ''
     });
 
-    const handleLogin = () => {
-        axios
+    const handleLogin = async() => {
+       await axios
             .post(`/api/login`, { username: values.username, password: values.password })
             .then((result) => {
                 const { token } = result.data;
@@ -70,7 +71,7 @@ function Login() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-    
+
     const handleClick = () => {
         setOpen(true);
     };
@@ -79,7 +80,6 @@ function Login() {
         if (reason === 'clickaway') {
             return;
         }
-
         setOpen(false);
     };
     const action = (
@@ -97,12 +97,12 @@ function Login() {
     return (
         <div className="App">
             <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
+                <AppBar position="static" sx={{ backgroundColor: '#2c3440' }}>
                     <Toolbar>
+                        <Popcorn style={{ height: 55, width: 56 }} />
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            <p>My Favourite Movies</p>
+                            <h2>my favourite movies</h2>
                         </Typography>
-
                     </Toolbar>
                 </AppBar>
                 <FormGroup className='formGroup'>
@@ -113,7 +113,6 @@ function Login() {
                             id="outlined-adornment-username"
                             value={values.username}
                             onChange={handleChange('username')}
-
                             label="username"
                         />
                     </FormControl>
@@ -140,8 +139,7 @@ function Login() {
                         />
                     </FormControl>
                     {<Button disabled={!values.username || !values.password} variant="contained" sx={{ m: 1 }} onClick={handleLogin}>Login</Button>}
-                    <Button variant="contained" sx={{ m: 1 }} onClick={() => { navigate("/my-favourite-movies/") }}>Sign Up</Button>
-
+                    <a style={{ cursor: 'pointer' }} onClick={() => { navigate("/my-favourite-movies/Signup") }}>or signup here</a>
                 </FormGroup>
             </Box>
             <div>

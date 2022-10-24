@@ -20,7 +20,6 @@ export default function Home() {
   const [searchInput, setSearchInput] = useState('');
   const [movieResults, setMovieResults] = useState('');
   const { userId, username, setUsername, movieId, setMovieId, playlist, setPlaylist } = useContext(UserContext);
-  const [user, setUser] = useState('');
   const axios = AxiosInstance();
   const api_key = import.meta.env.VITE_API_KEY
   const movie_db_url = `https://api.themoviedb.org/3/movie/popular?api_key=${api_key}&language=en-US&page=1`;
@@ -65,6 +64,7 @@ export default function Home() {
     }
     return
   }
+
 
   if (!movies) return null;
 

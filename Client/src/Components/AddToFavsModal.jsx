@@ -24,36 +24,36 @@ export default function AddToFavsModal() {
     const [open, setOpen] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const navigate = useNavigate();
-    const [playlist, setPlaylist] = useState('');
+   
     const [playlist_name, setPlaylist_Name] = useState('');
-    const { username, movieId, setMovieId, userId, setUsername, playlistNames, setPlaylistNames } = useContext(UserContext);
-    const [user, setUser] = useState('');
+    const { username, movieId, setMovieId, userId, setUsername, playlistNames, setPlaylistNames, playlist, setPlaylist } = useContext(UserContext);
     const axios = AxiosInstance();
-    const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const [dataRes, setDataRes] = useState(false);
     const [movieDetails, setMovieDetails] = useState('');
     const [message, setMessage] = useState('');
     const ref = useRef(null);
 
-    useEffect(() => {
+    const getPlaylistData = async() => {
         if (userId !== undefined)
-            axios.get(`/api/playlists/${userId}`).then(async (response) => {
-                const { data } = response
+        await axios.get(`/api/playlists/${userId}`).then(async (response) => {
+            const { data } = response
 
-                let playlistData = data.playlist
-                const movies = playlistData.map(async element => {
-                    try {
-                        const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
-                        return result.data;
-                    } catch (e) {
-                        return console.log(e);
-                    }
-                });
-                playlistData = await Promise.all(movies)
-                setPlaylist(playlistData)
+            let playlistData = data.playlist
+            const movies = playlistData.map(async element => {
+                try {
+                    const result = await axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=511ebf4540231b1f06e7bec72f6b4a05`);
+                    return result.data;
+                } catch (e) {
+                    return console.log(e);
+                }
             });
-    }, [username]);
+            playlistData = await Promise.all(movies)
+            setPlaylist(playlistData)
+        });
+    }
+    useEffect(() => {
+        getPlaylistData
+    }, [username, playlist]);
 
     useEffect(() => {
         const isInPlaylist = async () => {
@@ -71,6 +71,9 @@ export default function AddToFavsModal() {
             setPlaylistNames(data.playlistNames)
         })
     }
+    useEffect(() => {
+        getPlaylistNames()
+    }, [playlistNames])
 
     const createNewPlaylist = async () => {
         if (userId !== undefined)
@@ -85,6 +88,7 @@ export default function AddToFavsModal() {
             await axios.post(`/api/playlist_titles/${userId}/${playlist_name}/${movieId}`).then(() => {
                 setMessage(`added to playlist ${playlist_name}`)
                 alertSnackbar()
+                getPlaylistData()
             })
     }
     const removeFromFavourites = async (playlist) => {
@@ -92,6 +96,7 @@ export default function AddToFavsModal() {
             await axios.delete(`/api/playlist_titles?id=${userId}&movie_id=${movieId}&playlist_name=${playlist}`).then(() => {
                 setMessage(`removed from playlist ${playlist}`)
                 alertSnackbar()
+                getPlaylistData()
             })
     }
 
@@ -126,7 +131,6 @@ export default function AddToFavsModal() {
     );
     return (
         <>
-
             <Box
                 open={open}
                 onClose={handleClose}
@@ -164,8 +168,8 @@ export default function AddToFavsModal() {
                     />
                 </FormControl>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }} component={'span'} variant={'body2'}>
-                    <h2>Add to playlist</h2>
-                    {Array.isArray(playlistNames) ? playlistNames.map((res, index) =>
+                    {Array.isArray(playlistNames) ? <h2>Add to playlist</h2> && playlistNames.map((res, index) =>
+
                         <ListItem key={index}>
                             {checkPlaylist(res.playlist_name) == true ?
                                 <Checkbox key={index}
@@ -181,7 +185,7 @@ export default function AddToFavsModal() {
                             <ListItemIcon><Bookmarks /></ListItemIcon>
                             <ListItemText primary={`${res.playlist_name}`} onClick={() => navigate('/my-favourite-movies/Favourites')} sx={{ cursor: 'pointer' }} />
                         </ListItem>)
-                        : <CircularProgress />
+                        : null
                     }
                 </Typography>
             </Box>

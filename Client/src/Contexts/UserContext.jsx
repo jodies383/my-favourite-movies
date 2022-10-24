@@ -42,7 +42,6 @@ export const UserProvider = ({ children }) => {
     if (userId !== undefined)
       axios.get(`/api/all_playlist_titles/${userId}`).then(async (response) => {
         const { data } = response
-
         let playlistData = data.playlist
         const movies = playlistData.map(async element => {
           try {

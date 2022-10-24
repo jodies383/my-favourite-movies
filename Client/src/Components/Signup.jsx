@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from "react-router";
 import {
     AppBar,
@@ -17,36 +17,34 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
 import AxiosInstance from "../Hooks/AxiosInstance";
-import * as React from 'react';
+import Popcorn from './Icons/Popcorn';
 
-function SignUp() {
+export default function SignUp() {
     const navigate = useNavigate();
+    const axios = AxiosInstance();
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('');
     const [values, setValues] = useState({
         firstName: '',
         lastName: '',
         username: '',
         password: ''
     });
-    const [open, setOpen] = useState(false);
-    const [message, setMessage] = useState('')
-    const axios = AxiosInstance();
 
-    const handleSignUp = () => {
-        axios
+    const handleSignUp = async () => {
+        await axios
             .post(`/api/register`, { username: values.username, password: values.password, firstName: values.firstName, lastName: values.lastName })
             .then((result) => {
-                if (result.data.message == 'success') {
-
-                    console.log('registration successful')
+                const { message } = result.data
+                if (message == 'success') {
+                    setMessage('registration successful')
                     navigate("/my-favourite-movies/");
-
-
                 } else {
                     setMessage('this username has already been registered')
                     handleClick()
                 }
             });
-            setValues({firstName: '', lastName: '', username: '', password: ''})
+        setValues({ firstName: '', lastName: '', username: '', password: '' })
     }
     const handleChange = (prop) => (event) => {
         setValues({ ...values, [prop]: event.target.value });
@@ -90,12 +88,12 @@ function SignUp() {
     return (
         <div className="App">
             <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
-                    <Toolbar>
+                <AppBar position="static" sx={{ backgroundColor: '#2c3440' }}>
+                <Toolbar>
+                        <Popcorn style={{ height: 55, width: 56 }} />
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            <p>My Favourite Movies</p>
+                            <h2>my favourite movies</h2>
                         </Typography>
-
                     </Toolbar>
                 </AppBar>
                 <FormGroup className='formGroup'>
@@ -124,7 +122,6 @@ function SignUp() {
                             id="outlined-adornment-username"
                             value={values.username}
                             onChange={handleChange('username')}
-
                             label="username"
                         />
                     </FormControl>
@@ -151,7 +148,8 @@ function SignUp() {
                         />
                     </FormControl>
                     <Button disabled={!values.username || !values.password || !values.firstName || !values.lastName} variant="contained" sx={{ m: 1 }} onClick={handleSignUp}>Sign Up</Button>
-                    <Button variant="contained" sx={{ m: 1 }} onClick={() => { navigate("/my-favourite-movies/") }}>Login</Button>
+                   
+                    <a style={{ cursor: 'pointer' }} onClick={() => { navigate("/my-favourite-movies/") }}>or login here</a>
 
                 </FormGroup>
 
@@ -169,4 +167,3 @@ function SignUp() {
     )
 }
 
-export default SignUp
