@@ -16,15 +16,14 @@ import AxiosInstance from "../Hooks/AxiosInstance";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
   const [movies, setMovies] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [movieResults, setMovieResults] = useState('');
   const { userId, username, setUsername, movieId, setMovieId, playlist, setPlaylist } = useContext(UserContext);
   const [user, setUser] = useState('');
   const axios = AxiosInstance();
-  const api = import.meta.env.VITE_API_KEY
-  const movie_db_url = `https://api.themoviedb.org/3/movie/popular?api_key=${api}&language=en-US&page=1`;
+  const api_key = import.meta.env.VITE_API_KEY
+  const movie_db_url = `https://api.themoviedb.org/3/movie/popular?api_key=${api_key}&language=en-US&page=1`;
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -40,7 +39,7 @@ export default function Home() {
   
   const searchMovies = async () => {
     if (searchInput) {
-      await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${api}&query=${searchInput}`).then((result) => {
+      await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${api_key}&query=${searchInput}`).then((result) => {
         const results = result.data.results
         if (results.length < 1) {
           console.log('no movies found')

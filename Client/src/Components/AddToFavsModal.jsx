@@ -22,7 +22,7 @@ import AxiosInstance from "../Hooks/AxiosInstance";
 
 export default function AddToFavsModal() {
     const [open, setOpen] = useState(false);
-    const [openSnackbar, setOpenSnackbar] = useState(false)
+    const [openSnackbar, setOpenSnackbar] = useState(false);
     const navigate = useNavigate();
     const [playlist, setPlaylist] = useState('');
     const [playlist_name, setPlaylist_Name] = useState('');
@@ -32,8 +32,8 @@ export default function AddToFavsModal() {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const [dataRes, setDataRes] = useState(false);
-    const [movieDetails, setMovieDetails] = useState('')
-    const [message, setMessage] = useState('')
+    const [movieDetails, setMovieDetails] = useState('');
+    const [message, setMessage] = useState('');
     const ref = useRef(null);
 
     useEffect(() => {

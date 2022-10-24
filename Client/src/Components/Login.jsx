@@ -1,6 +1,7 @@
-import { useState, useEffect, useContext } from 'react'
+import React,{ useState, useEffect, useContext } from 'react'
 import { useNavigate } from "react-router";
 import UserContext from '../Contexts/UserContext';
+import AxiosInstance from "../Hooks/AxiosInstance";
 import {
     FormControl,
     InputLabel,
@@ -16,8 +17,7 @@ import {
     Snackbar,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
-import AxiosInstance from "../Hooks/AxiosInstance";
-import * as React from 'react';
+
 function Login() {
     const navigate = useNavigate();
     const { username, setUsername } = useContext(UserContext);

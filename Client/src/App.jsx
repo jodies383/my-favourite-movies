@@ -16,8 +16,8 @@ function App() {
       <UserProvider>
         <Router>
           <Routes>
-            <Route path="/my-favourite-movies/" element={<SignUp />} />
-            <Route path="/my-favourite-movies/Login" element={<Login />} />
+            <Route path="/my-favourite-movies/" element={<Login />} />
+            <Route path="/my-favourite-movies/Signup" element={<SignUp />} />
             <Route path="/my-favourite-movies/Home" element={<Home />} />
             <Route path="/my-favourite-movies/Favourites" element={<Favourites />} />
             <Route path="/my-favourite-movies/AddToFavsModal" element={<AddToFavsModal />} />

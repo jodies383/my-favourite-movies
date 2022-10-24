@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import React,{ useState, useEffect, useContext } from 'react';
 import { useNavigate } from "react-router";
 import UserContext from '../Contexts/UserContext';
 import AxiosInstance from "../Hooks/AxiosInstance";
@@ -21,22 +21,19 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
-   
+    DialogTitle
 } from '@mui/material';
 import { Delete, Bookmarks, Menu, Add, Person } from '@mui/icons-material';
 
-
 export default function Header() {
+    const navigate = useNavigate();
+    const axios = AxiosInstance();
     const [open, setOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
-    const navigate = useNavigate();
     const [playlist, setPlaylist] = useState('');
     const [allPlaylists, setAllPlaylists] = useState('');
     const [playlist_name, setPlaylist_Name] = useState('');
-    
-    const { userId, username, focusPlaylist, setFocusPlaylist, setUsername, user, setUser } = useContext(UserContext);
-    const axios = AxiosInstance();
+    const { userId, username, focusPlaylist, setFocusPlaylist, user } = useContext(UserContext);
 
     useEffect(() => {
         if (userId !== undefined) {
@@ -83,10 +80,6 @@ export default function Header() {
                 setPlaylist_Name('')
             })
     }
-
-    const handleChange = () => (event) => {
-        setPlaylist_Name(event.target.value);
-    };
 
     useEffect(() => {
         if (userId !== undefined)

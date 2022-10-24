@@ -38,7 +38,7 @@ function SignUp() {
                 if (result.data.message == 'success') {
 
                     console.log('registration successful')
-                    navigate("/my-favourite-movies/Login");
+                    navigate("/my-favourite-movies/");
 
 
                 } else {
@@ -151,7 +151,7 @@ function SignUp() {
                         />
                     </FormControl>
                     <Button disabled={!values.username || !values.password || !values.firstName || !values.lastName} variant="contained" sx={{ m: 1 }} onClick={handleSignUp}>Sign Up</Button>
-                    <Button variant="contained" sx={{ m: 1 }} onClick={() => { navigate("/my-favourite-movies/Login") }}>Login</Button>
+                    <Button variant="contained" sx={{ m: 1 }} onClick={() => { navigate("/my-favourite-movies/") }}>Login</Button>
 
                 </FormGroup>
 
