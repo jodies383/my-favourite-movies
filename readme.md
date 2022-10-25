@@ -10,4 +10,4 @@ In this app a user is able to:
 - Add and remove movies from playlists
 - View playlists
 
-[https://jodies383.github.io/my-favourite-movies/](My Favourite Movies)
+([My Favourite Movies](https://jodies383.github.io/my-favourite-movies/))
