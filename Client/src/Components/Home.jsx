@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from 'react'
-import { useNavigate } from "react-router";
 import Header from './Header';
 import UserContext from '../Contexts/UserContext';
 import AddToFavsModal from './AddToFavsModal';
@@ -19,7 +18,7 @@ export default function Home() {
   const [movies, setMovies] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [movieResults, setMovieResults] = useState('');
-  const { userId, username, setUsername, movieId, setMovieId, playlist, setPlaylist } = useContext(UserContext);
+  const { username, setUsername, setMovieId, playlist } = useContext(UserContext);
   const axios = AxiosInstance();
   const api_key = import.meta.env.VITE_API_KEY
   const movie_db_url = `https://api.themoviedb.org/3/movie/popular?api_key=${api_key}&language=en-US&page=1`;
