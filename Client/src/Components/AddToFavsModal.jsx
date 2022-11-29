@@ -9,7 +9,6 @@ import {
     ListItem,
     ListItemIcon,
     ListItemText,
-    CircularProgress,
     FormControl,
     Input,
     InputLabel,
