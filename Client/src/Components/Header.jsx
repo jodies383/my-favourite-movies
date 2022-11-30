@@ -26,7 +26,6 @@ import {
 import { Delete, Bookmarks, Menu, Add, Person2 } from '@mui/icons-material';
 import Popcorn from './Icons/Popcorn';
 
-
 export default function Header() {
     const navigate = useNavigate();
     const axios = AxiosInstance();

@@ -25,7 +25,7 @@ export default function AddToFavsModal() {
     const navigate = useNavigate();
    
     const [playlist_name, setPlaylist_Name] = useState('');
-    const { username, movieId, setMovieId, userId, setUsername, playlistNames, setPlaylistNames, playlist, setPlaylist } = useContext(UserContext);
+    const { username, movieId, setMovieId, userId, playlistNames, setPlaylistNames, playlist, setPlaylist } = useContext(UserContext);
     const axios = AxiosInstance();
     const handleClose = () => setOpen(false);
     const [movieDetails, setMovieDetails] = useState('');
