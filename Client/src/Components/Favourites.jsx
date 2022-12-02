@@ -37,6 +37,7 @@ export default function Favourites() {
         setPlaylist(playlistData)
       });
   }
+
   const getMoviesInPlaylist = async () => {
     if (userId !== undefined)
       await axios.get(`/api/playlist_titles/${userId}/${focusPlaylist}`).then(async response => {
@@ -53,6 +54,7 @@ export default function Favourites() {
         setFavourites(await Promise.all(movies))
       }).catch(e => console.log(e))
   }
+
   const removeMovie = async (movie) => {
     await axios
       .delete(`/api/playlist_titles?id=${userId}&movie_id=${movie}&playlist_name=${focusPlaylist}`)
@@ -62,6 +64,7 @@ export default function Favourites() {
         openSnackbar()
       });
   }
+  
   useEffect(() => {
     getPlaylistData
   }, [username, playlist]);
