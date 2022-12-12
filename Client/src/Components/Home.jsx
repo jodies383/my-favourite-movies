@@ -22,7 +22,6 @@ export default function Home() {
   const axios = AxiosInstance();
   const api_key = import.meta.env.VITE_API_KEY
   const movie_db_url = `https://api.themoviedb.org/3/movie/popular?api_key=${api_key}&language=en-US&page=1`;
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -121,5 +120,3 @@ export default function Home() {
     </div >
   )
 }
-
-
