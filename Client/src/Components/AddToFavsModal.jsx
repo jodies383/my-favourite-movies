@@ -20,12 +20,12 @@ import { Bookmarks, Add, Close } from '@mui/icons-material';
 import AxiosInstance from "../Hooks/AxiosInstance";
 
 export default function AddToFavsModal() {
+    const axios = AxiosInstance();
     const [open, setOpen] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const navigate = useNavigate();
     const [playlist_name, setPlaylist_Name] = useState('');
     const { username, movieId, setMovieId, userId, playlistNames, setPlaylistNames, playlist, setPlaylist } = useContext(UserContext);
-    const axios = AxiosInstance();
     const handleClose = () => setOpen(false);
     const [movieDetails, setMovieDetails] = useState('');
     const [message, setMessage] = useState('');
