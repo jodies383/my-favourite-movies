@@ -31,6 +31,8 @@ export default function AddToFavsModal() {
     const [message, setMessage] = useState('');
     const ref = useRef(null);
 
+
+
     const getPlaylistData = async() => {
         if (userId !== undefined)
         await axios.get(`/api/playlists/${userId}`).then(async (response) => {
@@ -197,4 +199,3 @@ export default function AddToFavsModal() {
         </>
     )
 }
-
