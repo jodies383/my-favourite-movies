@@ -37,7 +37,7 @@ export default function Favourites() {
         setPlaylist(playlistData)
       });
   }
-
+//
   const getMoviesInPlaylist = async () => {
     if (userId !== undefined)
       await axios.get(`/api/playlist_titles/${userId}/${focusPlaylist}`).then(async response => {

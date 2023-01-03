@@ -30,9 +30,7 @@ export default function AddToFavsModal() {
     const [movieDetails, setMovieDetails] = useState('');
     const [message, setMessage] = useState('');
     const ref = useRef(null);
-
-
-
+    
     const getPlaylistData = async() => {
         if (userId !== undefined)
         await axios.get(`/api/playlists/${userId}`).then(async (response) => {
